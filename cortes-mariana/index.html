@@ -52,6 +52,17 @@
   .rstar{color:#3a4a63;transition:color .08s,transform .08s} .rstar:hover{transform:scale(1.18)} .rstar.on{color:#ffd23f} .rstar.mine{color:#ffb300;text-shadow:0 0 8px rgba(255,179,0,.55)}
   .rate-big{font-size:30px;font-weight:900;line-height:1;color:#3a4a63;min-width:40px;text-align:center;letter-spacing:-1px} .rate-big.has{color:#ffd23f;text-shadow:0 0 12px rgba(255,210,63,.4)}
   .rate-avg{font-size:12.5px;font-weight:800;color:#ffd98a;margin-left:auto;text-align:right}
+  .sec-note{margin:-4px 0 12px;color:#bcd0ea;font-size:13px;line-height:1.5}
+  .card--bloco{background:linear-gradient(180deg,#0b2f47 0,#08233a 100%)}
+  .badge--yt{background:#c4302b;color:#fff}
+  .chip--dur{background:#c4302b;color:#fff;border-color:transparent;font-weight:800}
+  .chip--score{background:rgba(255,210,63,.16);color:#ffe08a;border-color:rgba(255,210,63,.4)}
+  .chip--mid{background:rgba(1,80,157,.2);color:#cfe0f6;border-color:rgba(1,80,157,.5)}
+  .chip--okflag{background:rgba(29,185,84,.16);color:#7ff0a8;border-color:rgba(29,185,84,.4)}
+  .chip--warn{background:rgba(240,160,32,.14);color:#ffd98a;border-color:rgba(240,160,32,.45)}
+  .block--hook{background:rgba(196,48,43,.12);border:1px solid rgba(196,48,43,.4)} .block--hook .hook{margin:0;font-size:15px;font-weight:800;color:#fff;line-height:1.35} .block--hook .hook-why{margin:6px 0 0;font-size:12.5px;color:#e6b7b5}
+  .block--titulos .titulos{margin:2px 0 0;padding-left:20px} .block--titulos .titulos li{font-size:13.5px;color:#eaf2ff;font-weight:600;margin:3px 0}
+  .bloco-tec{display:flex;flex-wrap:wrap;gap:6px}
   .feed{display:flex;flex-direction:column;gap:8px;margin-top:2px}
   .feed-empty{color:var(--muted);font-size:12.5px;font-style:italic}
   .fb{background:var(--navy-2);border:1px solid var(--line);border-left:4px solid var(--muted);border-radius:10px;padding:9px 11px}
@@ -97,10 +108,10 @@
       <div class="feed" id="feed-full"><div class="feed-empty">nenhuma avaliação ainda</div></div>
     </div>
   </section>
-  <div class="section-title"><span>Os cortes</span><div class="line"></div></div>
+  <div class="section-title"><span>Cortes curtos (Reels e Shorts)</span><div class="line"></div></div>
   <div class="resumo" id="resumo">carregando avaliações...</div>
   <div class="grid">
-    <article class="card" id="card-01" data-cid="01">
+    <article class="card" id="card-01" data-cid="01" data-idx="0">
       <div class="card__media">
         <div class="badge">CORTE 01 </div>
         <div class="rank" id="rank-01"></div>
@@ -139,7 +150,7 @@
       </div>
     </article>
 
-    <article class="card" id="card-02" data-cid="02">
+    <article class="card" id="card-02" data-cid="02" data-idx="1">
       <div class="card__media">
         <div class="badge">CORTE 02 </div>
         <div class="rank" id="rank-02"></div>
@@ -178,7 +189,7 @@
       </div>
     </article>
 
-    <article class="card" id="card-03" data-cid="03">
+    <article class="card" id="card-03" data-cid="03" data-idx="2">
       <div class="card__media">
         <div class="badge">CORTE 03 </div>
         <div class="rank" id="rank-03"></div>
@@ -217,7 +228,7 @@
       </div>
     </article>
 
-    <article class="card" id="card-04" data-cid="04">
+    <article class="card" id="card-04" data-cid="04" data-idx="3">
       <div class="card__media">
         <div class="badge">CORTE 04 <span class="star">&#9733;</span></div>
         <div class="rank" id="rank-04"></div>
@@ -256,7 +267,7 @@
       </div>
     </article>
 
-    <article class="card" id="card-05" data-cid="05">
+    <article class="card" id="card-05" data-cid="05" data-idx="4">
       <div class="card__media">
         <div class="badge">CORTE 05 </div>
         <div class="rank" id="rank-05"></div>
@@ -295,7 +306,7 @@
       </div>
     </article>
 
-    <article class="card" id="card-06" data-cid="06">
+    <article class="card" id="card-06" data-cid="06" data-idx="5">
       <div class="card__media">
         <div class="badge">CORTE 06 </div>
         <div class="rank" id="rank-06"></div>
@@ -334,7 +345,7 @@
       </div>
     </article>
 
-    <article class="card" id="card-07" data-cid="07">
+    <article class="card" id="card-07" data-cid="07" data-idx="6">
       <div class="card__media">
         <div class="badge">CORTE 07 </div>
         <div class="rank" id="rank-07"></div>
@@ -373,7 +384,7 @@
       </div>
     </article>
 
-    <article class="card" id="card-08" data-cid="08">
+    <article class="card" id="card-08" data-cid="08" data-idx="7">
       <div class="card__media">
         <div class="badge">CORTE 08 <span class="star">&#9733;</span></div>
         <div class="rank" id="rank-08"></div>
@@ -412,7 +423,7 @@
       </div>
     </article>
 
-    <article class="card" id="card-09" data-cid="09">
+    <article class="card" id="card-09" data-cid="09" data-idx="8">
       <div class="card__media">
         <div class="badge">CORTE 09 </div>
         <div class="rank" id="rank-09"></div>
@@ -451,7 +462,7 @@
       </div>
     </article>
 
-    <article class="card" id="card-10" data-cid="10">
+    <article class="card" id="card-10" data-cid="10" data-idx="9">
       <div class="card__media">
         <div class="badge">CORTE 10 <span class="star">&#9733;</span></div>
         <div class="rank" id="rank-10"></div>
@@ -490,7 +501,7 @@
       </div>
     </article>
 
-    <article class="card" id="card-11" data-cid="11">
+    <article class="card" id="card-11" data-cid="11" data-idx="10">
       <div class="card__media">
         <div class="badge">CORTE 11 </div>
         <div class="rank" id="rank-11"></div>
@@ -529,7 +540,7 @@
       </div>
     </article>
 
-    <article class="card" id="card-12" data-cid="12">
+    <article class="card" id="card-12" data-cid="12" data-idx="11">
       <div class="card__media">
         <div class="badge">CORTE 12 </div>
         <div class="rank" id="rank-12"></div>
@@ -568,7 +579,7 @@
       </div>
     </article>
 
-    <article class="card" id="card-13" data-cid="13">
+    <article class="card" id="card-13" data-cid="13" data-idx="12">
       <div class="card__media">
         <div class="badge">CORTE 13 <span class="star">&#9733;</span></div>
         <div class="rank" id="rank-13"></div>
@@ -606,6 +617,190 @@
         <div class="feed" id="feed-13"><div class="feed-empty">nenhuma avaliação ainda</div></div>
       </div>
     </article></div>
+  <div class="section-title"><span>Conteudo longo para YouTube (8 a 10 min)</span><div class="line"></div></div><p class="sec-note">Blocos de 8 a 10 minutos pra publicar direto no YouTube. Cada um e uma janela continua (toca inteiro, sem edicao por dentro), com gancho de abertura, opcoes de titulo e os pontos de thumbnail e de anuncio (mid-roll). Avalie e de nota igual aos cortes.</p><div class="grid grid-blocos">
+    <article class="card card--bloco" id="card-b01" data-cid="b01" data-idx="0">
+      <div class="card__media">
+        <div class="badge badge--yt">&#9654; YOUTUBE B01</div>
+        <div class="rank" id="rank-b01"></div>
+        <video class="player" controls preload="none" playsinline poster="https://mediagrowth.com.br/cortes/repasse-mariana/videos/poster-b01.jpg">
+          <source src="https://mediagrowth.com.br/cortes/repasse-mariana/videos/bloco-01.mp4" type="video/mp4"></video>
+      </div>
+      <div class="card__body">
+        <div class="meta">
+          <span class="chip chip--time">&#9201; 01:55 a 10:43</span>
+          <span class="chip chip--dur">&#9654; 8:48</span>
+          <span class="chip chip--tag">Contratação / processo</span>
+          <span class="chip chip--score">nota do analista 8.7/10</span>
+          <a class="chip chip--ctx" href="#" onclick="verNoCompleto(115.0);return false;" title="Ver onde o bloco COMECA no video original">&#9654; inicio no completo</a>
+          <a class="chip chip--ctx" href="#" onclick="verNoCompleto(643);return false;" title="Ver onde o bloco TERMINA no video original">&#9197; fim no completo</a>
+          <a class="chip chip--ctx" href="#" onclick="verNoCompleto(550.0);return false;" title="Ver o momento sugerido de thumbnail">&#128247; thumbnail 09:10</a>
+        </div>
+        <h3 class="card__title">Como contratar sem errar (o teste do áudio)</h3>
+        <div class="block block--hook">
+          <div class="block__head"><span>Gancho de abertura</span></div>
+          <p class="hook">&ldquo;Qual é o maior erro que o empresário comete na hora de contratar?&rdquo;</p>
+          <p class="hook-why">Pergunta que abre loop logo na abertura da entrevista: o dono quer saber na hora se comete esse erro.</p></div>
+        <div class="block block--titulos">
+          <div class="block__head"><span>Opcoes de titulo</span></div>
+          <ol class="titulos"><li>O erro de contratação que quebra o caixa da sua loja</li><li>O teste de áudio que revela o vendedor em 4 perguntas</li><li>Contrata pelo técnico, demite pelo comportamento</li></ol></div>
+        <div class="block block--motivo">
+          <div class="block__head"><span>Resumo</span></div><p>Um processo de contratação que filtra o vendedor certo, do perfil ao teste prático do áudio.</p></div>
+        <div class="bloco-tec">
+          <span class="chip chip--mid">&#9208; Mid-roll sugerido: 06:45</span>
+          <span class="chip chip--warn">&#9888; Entrada logo após a apresentação da convidada; conferir 3s de entrada (o bloco se sustenta sozinho).</span>
+        </div>
+        <div class="rating" id="rate-b01">
+          <span class="rate-lbl">Sua nota <small>(2 a 10)</small></span>
+          <span class="stars"><i class="rstar" data-n="2" onmouseover="rateHover('b01',2)" onmouseout="rateLeave('b01')" onclick="rateClick('b01',2)" title="nota 2">&#9733;</i><i class="rstar" data-n="3" onmouseover="rateHover('b01',3)" onmouseout="rateLeave('b01')" onclick="rateClick('b01',3)" title="nota 3">&#9733;</i><i class="rstar" data-n="4" onmouseover="rateHover('b01',4)" onmouseout="rateLeave('b01')" onclick="rateClick('b01',4)" title="nota 4">&#9733;</i><i class="rstar" data-n="5" onmouseover="rateHover('b01',5)" onmouseout="rateLeave('b01')" onclick="rateClick('b01',5)" title="nota 5">&#9733;</i><i class="rstar" data-n="6" onmouseover="rateHover('b01',6)" onmouseout="rateLeave('b01')" onclick="rateClick('b01',6)" title="nota 6">&#9733;</i><i class="rstar" data-n="7" onmouseover="rateHover('b01',7)" onmouseout="rateLeave('b01')" onclick="rateClick('b01',7)" title="nota 7">&#9733;</i><i class="rstar" data-n="8" onmouseover="rateHover('b01',8)" onmouseout="rateLeave('b01')" onclick="rateClick('b01',8)" title="nota 8">&#9733;</i><i class="rstar" data-n="9" onmouseover="rateHover('b01',9)" onmouseout="rateLeave('b01')" onclick="rateClick('b01',9)" title="nota 9">&#9733;</i><i class="rstar" data-n="10" onmouseover="rateHover('b01',10)" onmouseout="rateLeave('b01')" onclick="rateClick('b01',10)" title="nota 10">&#9733;</i></span>
+          <span class="rate-big" id="ratebig-b01">-</span>
+          <span class="rate-avg" id="rateavg-b01"></span>
+        </div>
+        <div class="decisao">
+          <button type="button" class="btn btn--ok"  onclick="abrir('corte','b01','aprovado')">&#10003; Aprovar</button>
+          <button type="button" class="btn btn--adj" onclick="abrir('corte','b01','alteracoes')">&#9998; Pedir alterações</button>
+          <button type="button" class="btn btn--no"  onclick="abrir('corte','b01','reprovado')">&#10007; Reprovar</button>
+        </div>
+        <div class="feed" id="feed-b01"><div class="feed-empty">nenhuma avaliação ainda</div></div>
+      </div>
+    </article>
+
+    <article class="card card--bloco" id="card-b02" data-cid="b02" data-idx="1">
+      <div class="card__media">
+        <div class="badge badge--yt">&#9654; YOUTUBE B02</div>
+        <div class="rank" id="rank-b02"></div>
+        <video class="player" controls preload="none" playsinline poster="https://mediagrowth.com.br/cortes/repasse-mariana/videos/poster-b02.jpg">
+          <source src="https://mediagrowth.com.br/cortes/repasse-mariana/videos/bloco-02.mp4" type="video/mp4"></video>
+      </div>
+      <div class="card__body">
+        <div class="meta">
+          <span class="chip chip--time">&#9201; 22:16 a 30:30</span>
+          <span class="chip chip--dur">&#9654; 8:14</span>
+          <span class="chip chip--tag">Legislação / gestão</span>
+          <span class="chip chip--score">nota do analista 8.9/10</span>
+          <a class="chip chip--ctx" href="#" onclick="verNoCompleto(1336.0);return false;" title="Ver onde o bloco COMECA no video original">&#9654; inicio no completo</a>
+          <a class="chip chip--ctx" href="#" onclick="verNoCompleto(1830);return false;" title="Ver onde o bloco TERMINA no video original">&#9197; fim no completo</a>
+          <a class="chip chip--ctx" href="#" onclick="verNoCompleto(1430.0);return false;" title="Ver o momento sugerido de thumbnail">&#128247; thumbnail 23:50</a>
+        </div>
+        <h3 class="card__title">A NR1 e a bomba da saúde mental no trabalho</h3>
+        <div class="block block--hook">
+          <div class="block__head"><span>Gancho de abertura</span></div>
+          <p class="hook">&ldquo;Já ouviu falar da NR1? Essa aqui deu medo.&rdquo;</p>
+          <p class="hook-why">Abre loop e cria tensão: uma lei nova que assusta o empresário e quase ninguém explicou direito.</p></div>
+        <div class="block block--titulos">
+          <div class="block__head"><span>Opcoes de titulo</span></div>
+          <ol class="titulos"><li>NR1: a lei que pode multar sua loja em R$18 mil</li><li>546 mil afastados: a bomba da saúde mental chegou nas empresas</li><li>O que muda na hora de cobrar meta com a NR1</li></ol></div>
+        <div class="block block--motivo">
+          <div class="block__head"><span>Resumo</span></div><p>A nova norma que obriga a empresa a cuidar da saúde mental do time, o que fiscaliza e o risco de multa.</p></div>
+        <div class="bloco-tec">
+          <span class="chip chip--mid">&#9208; Mid-roll sugerido: 26:20</span>
+          <span class="chip chip--warn">&#9888; Cita valor de multa, que pode desatualizar com o tempo.</span>
+        </div>
+        <div class="rating" id="rate-b02">
+          <span class="rate-lbl">Sua nota <small>(2 a 10)</small></span>
+          <span class="stars"><i class="rstar" data-n="2" onmouseover="rateHover('b02',2)" onmouseout="rateLeave('b02')" onclick="rateClick('b02',2)" title="nota 2">&#9733;</i><i class="rstar" data-n="3" onmouseover="rateHover('b02',3)" onmouseout="rateLeave('b02')" onclick="rateClick('b02',3)" title="nota 3">&#9733;</i><i class="rstar" data-n="4" onmouseover="rateHover('b02',4)" onmouseout="rateLeave('b02')" onclick="rateClick('b02',4)" title="nota 4">&#9733;</i><i class="rstar" data-n="5" onmouseover="rateHover('b02',5)" onmouseout="rateLeave('b02')" onclick="rateClick('b02',5)" title="nota 5">&#9733;</i><i class="rstar" data-n="6" onmouseover="rateHover('b02',6)" onmouseout="rateLeave('b02')" onclick="rateClick('b02',6)" title="nota 6">&#9733;</i><i class="rstar" data-n="7" onmouseover="rateHover('b02',7)" onmouseout="rateLeave('b02')" onclick="rateClick('b02',7)" title="nota 7">&#9733;</i><i class="rstar" data-n="8" onmouseover="rateHover('b02',8)" onmouseout="rateLeave('b02')" onclick="rateClick('b02',8)" title="nota 8">&#9733;</i><i class="rstar" data-n="9" onmouseover="rateHover('b02',9)" onmouseout="rateLeave('b02')" onclick="rateClick('b02',9)" title="nota 9">&#9733;</i><i class="rstar" data-n="10" onmouseover="rateHover('b02',10)" onmouseout="rateLeave('b02')" onclick="rateClick('b02',10)" title="nota 10">&#9733;</i></span>
+          <span class="rate-big" id="ratebig-b02">-</span>
+          <span class="rate-avg" id="rateavg-b02"></span>
+        </div>
+        <div class="decisao">
+          <button type="button" class="btn btn--ok"  onclick="abrir('corte','b02','aprovado')">&#10003; Aprovar</button>
+          <button type="button" class="btn btn--adj" onclick="abrir('corte','b02','alteracoes')">&#9998; Pedir alterações</button>
+          <button type="button" class="btn btn--no"  onclick="abrir('corte','b02','reprovado')">&#10007; Reprovar</button>
+        </div>
+        <div class="feed" id="feed-b02"><div class="feed-empty">nenhuma avaliação ainda</div></div>
+      </div>
+    </article>
+
+    <article class="card card--bloco" id="card-b03" data-cid="b03" data-idx="2">
+      <div class="card__media">
+        <div class="badge badge--yt">&#9654; YOUTUBE B03</div>
+        <div class="rank" id="rank-b03"></div>
+        <video class="player" controls preload="none" playsinline poster="https://mediagrowth.com.br/cortes/repasse-mariana/videos/poster-b03.jpg">
+          <source src="https://mediagrowth.com.br/cortes/repasse-mariana/videos/bloco-03.mp4" type="video/mp4"></video>
+      </div>
+      <div class="card__body">
+        <div class="meta">
+          <span class="chip chip--time">&#9201; 33:32 a 42:44</span>
+          <span class="chip chip--dur">&#9654; 9:12</span>
+          <span class="chip chip--tag">Liderança / promoção</span>
+          <span class="chip chip--score">nota do analista 8.5/10</span>
+          <a class="chip chip--ctx" href="#" onclick="verNoCompleto(2012.0);return false;" title="Ver onde o bloco COMECA no video original">&#9654; inicio no completo</a>
+          <a class="chip chip--ctx" href="#" onclick="verNoCompleto(2564);return false;" title="Ver onde o bloco TERMINA no video original">&#9197; fim no completo</a>
+          <a class="chip chip--ctx" href="#" onclick="verNoCompleto(2130.0);return false;" title="Ver o momento sugerido de thumbnail">&#128247; thumbnail 35:30</a>
+        </div>
+        <h3 class="card__title">Por que promover seu melhor vendedor a gerente é cilada</h3>
+        <div class="block block--hook">
+          <div class="block__head"><span>Gancho de abertura</span></div>
+          <p class="hook">&ldquo;O que o lojista tem que olhar na hora de promover alguém?&rdquo;</p>
+          <p class="hook-why">Pergunta prática que todo dono enfrenta e quase todo mundo erra ao promover pelo resultado de vendas.</p></div>
+        <div class="block block--titulos">
+          <div class="block__head"><span>Opcoes de titulo</span></div>
+          <ol class="titulos"><li>Por que promover seu melhor vendedor a gerente é uma cilada</li><li>Liderar pelo exemplo: o dono que pega o telefone e liga</li><li>Alpinista, campista ou desistente: o perfil do seu vendedor</li></ol></div>
+        <div class="block block--motivo">
+          <div class="block__head"><span>Resumo</span></div><p>A diferença entre vender bem e liderar, e como conduzir cada perfil de vendedor, inclusive a geração Z.</p></div>
+        <div class="bloco-tec">
+          <span class="chip chip--mid">&#9208; Mid-roll sugerido: 38:13</span>
+          <span class="chip chip--okflag">&#10003; Sem riscos identificados.</span>
+        </div>
+        <div class="rating" id="rate-b03">
+          <span class="rate-lbl">Sua nota <small>(2 a 10)</small></span>
+          <span class="stars"><i class="rstar" data-n="2" onmouseover="rateHover('b03',2)" onmouseout="rateLeave('b03')" onclick="rateClick('b03',2)" title="nota 2">&#9733;</i><i class="rstar" data-n="3" onmouseover="rateHover('b03',3)" onmouseout="rateLeave('b03')" onclick="rateClick('b03',3)" title="nota 3">&#9733;</i><i class="rstar" data-n="4" onmouseover="rateHover('b03',4)" onmouseout="rateLeave('b03')" onclick="rateClick('b03',4)" title="nota 4">&#9733;</i><i class="rstar" data-n="5" onmouseover="rateHover('b03',5)" onmouseout="rateLeave('b03')" onclick="rateClick('b03',5)" title="nota 5">&#9733;</i><i class="rstar" data-n="6" onmouseover="rateHover('b03',6)" onmouseout="rateLeave('b03')" onclick="rateClick('b03',6)" title="nota 6">&#9733;</i><i class="rstar" data-n="7" onmouseover="rateHover('b03',7)" onmouseout="rateLeave('b03')" onclick="rateClick('b03',7)" title="nota 7">&#9733;</i><i class="rstar" data-n="8" onmouseover="rateHover('b03',8)" onmouseout="rateLeave('b03')" onclick="rateClick('b03',8)" title="nota 8">&#9733;</i><i class="rstar" data-n="9" onmouseover="rateHover('b03',9)" onmouseout="rateLeave('b03')" onclick="rateClick('b03',9)" title="nota 9">&#9733;</i><i class="rstar" data-n="10" onmouseover="rateHover('b03',10)" onmouseout="rateLeave('b03')" onclick="rateClick('b03',10)" title="nota 10">&#9733;</i></span>
+          <span class="rate-big" id="ratebig-b03">-</span>
+          <span class="rate-avg" id="rateavg-b03"></span>
+        </div>
+        <div class="decisao">
+          <button type="button" class="btn btn--ok"  onclick="abrir('corte','b03','aprovado')">&#10003; Aprovar</button>
+          <button type="button" class="btn btn--adj" onclick="abrir('corte','b03','alteracoes')">&#9998; Pedir alterações</button>
+          <button type="button" class="btn btn--no"  onclick="abrir('corte','b03','reprovado')">&#10007; Reprovar</button>
+        </div>
+        <div class="feed" id="feed-b03"><div class="feed-empty">nenhuma avaliação ainda</div></div>
+      </div>
+    </article>
+
+    <article class="card card--bloco" id="card-b04" data-cid="b04" data-idx="3">
+      <div class="card__media">
+        <div class="badge badge--yt">&#9654; YOUTUBE B04</div>
+        <div class="rank" id="rank-b04"></div>
+        <video class="player" controls preload="none" playsinline poster="https://mediagrowth.com.br/cortes/repasse-mariana/videos/poster-b04.jpg">
+          <source src="https://mediagrowth.com.br/cortes/repasse-mariana/videos/bloco-04.mp4" type="video/mp4"></video>
+      </div>
+      <div class="card__body">
+        <div class="meta">
+          <span class="chip chip--time">&#9201; 72:47 a 82:00</span>
+          <span class="chip chip--dur">&#9654; 9:13</span>
+          <span class="chip chip--tag">Liderança / retenção</span>
+          <span class="chip chip--score">nota do analista 9.2/10</span>
+          <a class="chip chip--ctx" href="#" onclick="verNoCompleto(4367.0);return false;" title="Ver onde o bloco COMECA no video original">&#9654; inicio no completo</a>
+          <a class="chip chip--ctx" href="#" onclick="verNoCompleto(4920);return false;" title="Ver onde o bloco TERMINA no video original">&#9197; fim no completo</a>
+          <a class="chip chip--ctx" href="#" onclick="verNoCompleto(4680.0);return false;" title="Ver o momento sugerido de thumbnail">&#128247; thumbnail 78:00</a>
+        </div>
+        <h3 class="card__title">Por que seu melhor vendedor vai embora (não é o salário)</h3>
+        <div class="block block--hook">
+          <div class="block__head"><span>Gancho de abertura</span></div>
+          <p class="hook">&ldquo;Os melhores profissionais saem por salário ou por ambiente?&rdquo;</p>
+          <p class="hook-why">Pergunta que abre loop e a resposta seca (Liderança) quebra a expectativa de quem acha que é dinheiro.</p></div>
+        <div class="block block--titulos">
+          <div class="block__head"><span>Opcoes de titulo</span></div>
+          <ol class="titulos"><li>Por que seu melhor vendedor vai embora (não é o salário)</li><li>Ele largou tudo e levou o vendedor pra andar de jet ski</li><li>Pessoas não são custo: o segredo de reter talento</li></ol></div>
+        <div class="block block--motivo">
+          <div class="block__head"><span>Resumo</span></div><p>Por que os melhores pedem pra sair e como valorização e liderança pelo exemplo seguram o time.</p></div>
+        <div class="bloco-tec">
+          <span class="chip chip--mid">&#9208; Mid-roll sugerido: 76:00</span>
+          <span class="chip chip--okflag">&#10003; Sem riscos identificados. Bloco mais forte, com pico emocional na história do jet ski.</span>
+        </div>
+        <div class="rating" id="rate-b04">
+          <span class="rate-lbl">Sua nota <small>(2 a 10)</small></span>
+          <span class="stars"><i class="rstar" data-n="2" onmouseover="rateHover('b04',2)" onmouseout="rateLeave('b04')" onclick="rateClick('b04',2)" title="nota 2">&#9733;</i><i class="rstar" data-n="3" onmouseover="rateHover('b04',3)" onmouseout="rateLeave('b04')" onclick="rateClick('b04',3)" title="nota 3">&#9733;</i><i class="rstar" data-n="4" onmouseover="rateHover('b04',4)" onmouseout="rateLeave('b04')" onclick="rateClick('b04',4)" title="nota 4">&#9733;</i><i class="rstar" data-n="5" onmouseover="rateHover('b04',5)" onmouseout="rateLeave('b04')" onclick="rateClick('b04',5)" title="nota 5">&#9733;</i><i class="rstar" data-n="6" onmouseover="rateHover('b04',6)" onmouseout="rateLeave('b04')" onclick="rateClick('b04',6)" title="nota 6">&#9733;</i><i class="rstar" data-n="7" onmouseover="rateHover('b04',7)" onmouseout="rateLeave('b04')" onclick="rateClick('b04',7)" title="nota 7">&#9733;</i><i class="rstar" data-n="8" onmouseover="rateHover('b04',8)" onmouseout="rateLeave('b04')" onclick="rateClick('b04',8)" title="nota 8">&#9733;</i><i class="rstar" data-n="9" onmouseover="rateHover('b04',9)" onmouseout="rateLeave('b04')" onclick="rateClick('b04',9)" title="nota 9">&#9733;</i><i class="rstar" data-n="10" onmouseover="rateHover('b04',10)" onmouseout="rateLeave('b04')" onclick="rateClick('b04',10)" title="nota 10">&#9733;</i></span>
+          <span class="rate-big" id="ratebig-b04">-</span>
+          <span class="rate-avg" id="rateavg-b04"></span>
+        </div>
+        <div class="decisao">
+          <button type="button" class="btn btn--ok"  onclick="abrir('corte','b04','aprovado')">&#10003; Aprovar</button>
+          <button type="button" class="btn btn--adj" onclick="abrir('corte','b04','alteracoes')">&#9998; Pedir alterações</button>
+          <button type="button" class="btn btn--no"  onclick="abrir('corte','b04','reprovado')">&#10007; Reprovar</button>
+        </div>
+        <div class="feed" id="feed-b04"><div class="feed-empty">nenhuma avaliação ainda</div></div>
+      </div>
+    </article></div>
 </main>
 <footer>Página de validação de cortes &middot; MediaGrowth</footer>
 
@@ -620,7 +815,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
-const DADOS={"projeto": "Cortes do Podcast Mariana Ramos", "cliente": "Repasse Podcast", "episodio": "Mariana Ramos · Psicologia e RH (contratação, liderança e retenção)", "fonte": "PODCAST MARIANA.mov", "slug": "repasse-mariana", "repo": "repasse-mariana-cortes", "modo": "feed", "duracao_total": "92:05", "cortes": [{"id": "01", "arquivo": "videos/corte-01.mp4", "poster": "videos/poster-01.jpg", "titulo": "Contrata pelo técnico, demite pelo comportamental", "assunto": "RH / contratação", "destaque": false, "inicio": "05:54", "fim": "06:28", "inicio_sec": 354.0, "dur_sec": 34.0, "duracao": "34s", "descricao": "Mariana crava o maior erro das empresas: contratar olhando só a parte técnica. O cara sabe vender carro há dez anos, mas roda de emprego em emprego. O comportamento é o que fica de fora e é justamente o que faz demitir.", "legenda": "O maior erro na hora de contratar: olhar só o técnico. A gente contrata pelo currículo e demite pelo comportamento. Concorda? Comenta aí.", "motivo": "Frase-tese curta e citável, verdade que dói para quem contrata."}, {"id": "02", "arquivo": "videos/corte-02.mp4", "poster": "videos/poster-02.jpg", "titulo": "Nunca contrate quem você não pode demitir", "assunto": "Contratação / gestão", "destaque": false, "inicio": "06:45", "fim": "07:30", "inicio_sec": 405.0, "dur_sec": 45.0, "duracao": "45s", "descricao": "Gustavo explica por que jamais contrata parente ou filho de amigo: se a pessoa não performa, você tem que demitir, e aí perde a relação e o funcionário de uma vez.", "legenda": "A regra que todo dono de loja deveria seguir: só contrate quem você conseguiria demitir. Contratou o filho do amigo? Prepare o coração. Salva esse aqui e chama a gente no direct do @repasse_podcast.", "motivo": "Opinião polêmica + identificação: todo empresário já viveu o dilema de contratar conhecido."}, {"id": "03", "arquivo": "videos/corte-03.mp4", "poster": "videos/poster-03.jpg", "titulo": "A técnica do áudio: 4 perguntas que revelam o vendedor", "assunto": "Recrutamento / vendas", "destaque": false, "inicio": "08:47", "fim": "10:37", "inicio_sec": 527.0, "dur_sec": 110.0, "duracao": "110s", "descricao": "Antes de chamar o candidato na loja, Gustavo manda um áudio com 4 perguntas objetivas. De cada 100 que entram em contato, só 10 respondem no detalhe. O raciocínio: quem não escuta e responde na contratação também não vai escutar o cliente na venda.", "legenda": "O filtro de contratação mais barato que existe: um áudio com 4 perguntas. De 100 candidatos, 10 respondem direito. Testa e me conta o resultado no direct do @repasse_podcast.", "motivo": "Sacada de autoridade replicável, direto pro público de lojistas. Alta chance de save/compartilhamento."}, {"id": "04", "arquivo": "videos/corte-04.mp4", "poster": "videos/poster-04.jpg", "titulo": "85% da compra do carro quem decide é a esposa", "assunto": "Vendas / comportamento", "destaque": true, "inicio": "12:47", "fim": "13:28", "inicio_sec": 767.0, "dur_sec": 41.0, "duracao": "41s", "descricao": "Dado que faz todo vendedor balançar a cabeça: em 85% das compras de carro por casais, quem decide é a mulher. Daí a clássica objeção do tem que falar com a esposa.", "legenda": "85% da decisão de comprar o carro é da esposa. Não subestima quem tá do lado do cliente. Marca aquele vendedor que precisa ver isso.", "motivo": "Número seco + identificação imediata do nicho automotivo. Gancho de altíssima retenção."}, {"id": "05", "arquivo": "videos/corte-05.mp4", "poster": "videos/poster-05.jpg", "titulo": "O vendedor estrela que destrói o time", "assunto": "Liderança / cultura", "destaque": false, "inicio": "21:23", "fim": "22:14", "inicio_sec": 1283.0, "dur_sec": 51.0, "duracao": "51s", "descricao": "Tem gente que não muda por mais feedback que receba. A hora que o líder não tem coragem de dizer adeus ao comportamento tóxico, ele contamina o time inteiro, porque comportamento se copia. A forma como você trata o colaborador é a forma como ele trata o cliente.", "legenda": "Segurar o vendedor tóxico só porque ele vende destrói o resto do time. Comportamento se copia. A forma como você trata o colaborador é a forma como ele trata o cliente.", "motivo": "Verdade que dói + autoridade. Frase-espelho altamente compartilhável."}, {"id": "06", "arquivo": "videos/corte-06.mp4", "poster": "videos/poster-06.jpg", "titulo": "NR1: 7 Maracanãs lotados de afastados por doença", "assunto": "Legislação / gestão", "destaque": false, "inicio": "22:37", "fim": "24:09", "inicio_sec": 1357.0, "dur_sec": 92.0, "duracao": "92s", "descricao": "Mariana explica a NR1, a norma mãe do trabalho, que agora olha os riscos psicossociais. O número que assusta: no ano passado foram 546 mil pessoas afastadas por doença, o equivalente a 7 Maracanãs lotados, sendo 80% doença mental.", "legenda": "546 mil afastados por doença em um ano, o equivalente a 7 Maracanãs lotados, e 80% é saúde mental. A NR1 chegou pra mudar como sua empresa cuida disso. Sua loja tá preparada?", "motivo": "Assunto quente (lei nova) + número chocante + urgência. Forte apelo para empresários."}, {"id": "07", "arquivo": "videos/corte-07.mp4", "poster": "videos/poster-07.jpg", "titulo": "Meta impossível adoece o seu time", "assunto": "Gestão / metas", "destaque": false, "inicio": "26:23", "fim": "27:10", "inicio_sec": 1583.0, "dur_sec": 47.0, "duracao": "47s", "descricao": "A NR1 não proíbe meta, sem meta a conta não fecha. O que ela cobra é meta possível. Saltar de 50% pra 100% do nada não motiva, adoece o colaborador porque ele sabe que não vai alcançar.", "legenda": "Meta não é problema. Meta impossível é. Pular de 50% pra 100% do nada não motiva, adoece o time. Como estão as metas da sua loja?", "motivo": "Autoridade prática + tema sensível de gestão que gera debate."}, {"id": "08", "arquivo": "videos/corte-08.mp4", "poster": "videos/poster-08.jpg", "titulo": "Liderar pelo exemplo: pega o telefone e liga", "assunto": "Liderança", "destaque": true, "inicio": "35:04", "fim": "36:06", "inicio_sec": 2104.0, "dur_sec": 62.0, "duracao": "62s", "descricao": "Num plantão de domingo, em vez de mandar os vendedores trabalharem sozinhos, Gustavo pega o telefone e começa a ligar pros clientes. A energia propaga: o vendedor vê o dono ligando e começa a ligar também. Liderar pelo exemplo não tem erro.", "legenda": "Quer que o time ligue pro cliente? Pega o telefone e liga primeiro. A energia propaga. Liderar pelo exemplo não tem erro. Marca um líder que precisa ver isso.", "motivo": "História curta com punch + princípio universal de liderança. Alta identificação."}, {"id": "09", "arquivo": "videos/corte-09.mp4", "poster": "videos/poster-09.jpg", "titulo": "Geração Z não vai rampar ligando (e como usar isso)", "assunto": "Gestão de gerações", "destaque": false, "inicio": "41:21", "fim": "42:44", "inicio_sec": 2481.0, "dur_sec": 83.0, "duracao": "83s", "descricao": "Pedir pra um vendedor da geração Z bater telefone o dia todo é receita pra ele adoecer, ele não cresceu com ligação. A saída: deixa o Z captar pelo WhatsApp e pela IA e passa o lead quente pro perfil que ama ligar. Venda casada dentro do próprio time.", "legenda": "Cobrar ligação de um vendedor geração Z é queimar ele à toa. Deixa o Z captar no digital e passa o lead pro que ama telefone. Cada um no seu forte, a meta fecha no fim.", "motivo": "Tema geracional (viraliza) + solução prática de escala do time."}, {"id": "10", "arquivo": "videos/corte-10.mp4", "poster": "videos/poster-10.jpg", "titulo": "O vendedor bateria: não vende 10 dias, depois arrebenta", "assunto": "Gestão de pessoas", "destaque": true, "inicio": "50:34", "fim": "52:22", "inicio_sec": 3034.0, "dur_sec": 108.0, "duracao": "108s", "descricao": "Gustavo tem vendedor que do dia 1 ao 10 não vende quase nada, e depois do dia 15 vira um supermercado. Mariana explica com a metáfora da bateria do celular: nos primeiros dias o cara está recarregando pra depois arrebentar. Gestão é respeitar o tempo de cada um.", "legenda": "Tem vendedor que passa 10 dias devagar e depois arrebenta a meta. É a bateria dele recarregando. Gestão de verdade é respeitar o tempo de cada um. Você lidera assim ou já brigou por isso?", "motivo": "História real + metáfora que gruda (a bateria). Muito relacionável para qualquer gestor."}, {"id": "11", "arquivo": "videos/corte-11.mp4", "poster": "videos/poster-11.jpg", "titulo": "Quando acerta, ninguém fala; quando erra, crucifica", "assunto": "Liderança / feedback", "destaque": false, "inicio": "69:26", "fim": "70:12", "inicio_sec": 4166.0, "dur_sec": 46.0, "duracao": "46s", "descricao": "Perguntando por que vendedores querem sair de outras lojas, Gustavo ouve sempre a mesma coisa: não é dinheiro, é falta de valorização. Quando acertam, ninguém fala nada; quando erram, crucificam. A cura é simples: acertou, elogia; errou, corrige com calma.", "legenda": "Sabe por que seu melhor vendedor pede pra sair? Não é o salário. É que quando ele acerta ninguém fala nada, e quando erra é crucificado. Acertou, elogia. Errou, corrige com calma.", "motivo": "Verdade que dói + identificação de quem já foi colaborador. Gera comentário."}, {"id": "12", "arquivo": "videos/corte-12.mp4", "poster": "videos/poster-12.jpg", "titulo": "Cuidar das pessoas não é gentileza, é estratégia", "assunto": "Gestão / resultado", "destaque": false, "inicio": "71:21", "fim": "72:02", "inicio_sec": 4281.0, "dur_sec": 41.0, "duracao": "41s", "descricao": "Mariana fecha a lógica: cuidar das pessoas não é um ato de gentileza, é uma decisão estratégica. Colaborador cuidado gera mais lucro e sustentabilidade, porque a IA faz a triagem, mas quem constrói relacionamento e fecha a venda são as pessoas.", "legenda": "Cuidar das pessoas não é gentileza, é decisão estratégica. A IA faz a triagem, mas quem fecha a venda é gente. Colaborador bem cuidado dá mais lucro. Salva pra lembrar.", "motivo": "Autoridade + tese que ancora o episódio. Bom encerramento e citação forte."}, {"id": "13", "arquivo": "videos/corte-13.mp4", "poster": "videos/poster-13.jpg", "titulo": "Levou o vendedor pra andar de jet: pessoas não são custo", "assunto": "Liderança / cultura", "destaque": true, "inicio": "77:46", "fim": "79:20", "inicio_sec": 4666.0, "dur_sec": 94.0, "duracao": "94s", "descricao": "Um vendedor que arrebenta meta passou dois dias muito mal. Gustavo mandou ele pegar as coisas, foram andar de jet ski o dia inteiro. No dia seguinte era outra pessoa. Perdeu um dia de trabalho e ganhou um funcionário leal. Pessoas não são custo.", "legenda": "O vendedor tava mal, então largamos tudo e fomos andar de jet o dia inteiro. No outro dia ele era outra pessoa. Perdi um dia, ganhei lealdade. Pessoas não são custo.", "motivo": "História com emoção + virada + lição de negócio. Aposta principal de viralização e feel-good."}]}; const API="https://mediagrowth.com.br/cortes-api/api.php"; const SLUG="repasse-mariana"; const KEY="valida_"+SLUG;
+const DADOS={"projeto": "Cortes do Podcast Mariana Ramos", "cliente": "Repasse Podcast", "episodio": "Mariana Ramos · Psicologia e RH (contratação, liderança e retenção)", "fonte": "PODCAST MARIANA.mov", "slug": "repasse-mariana", "repo": "repasse-mariana-cortes", "modo": "feed", "duracao_total": "92:05", "cortes": [{"id": "01", "arquivo": "videos/corte-01.mp4", "poster": "videos/poster-01.jpg", "titulo": "Contrata pelo técnico, demite pelo comportamental", "assunto": "RH / contratação", "destaque": false, "inicio": "05:54", "fim": "06:28", "inicio_sec": 354.0, "dur_sec": 34.0, "duracao": "34s", "descricao": "Mariana crava o maior erro das empresas: contratar olhando só a parte técnica. O cara sabe vender carro há dez anos, mas roda de emprego em emprego. O comportamento é o que fica de fora e é justamente o que faz demitir.", "legenda": "O maior erro na hora de contratar: olhar só o técnico. A gente contrata pelo currículo e demite pelo comportamento. Concorda? Comenta aí.", "motivo": "Frase-tese curta e citável, verdade que dói para quem contrata."}, {"id": "02", "arquivo": "videos/corte-02.mp4", "poster": "videos/poster-02.jpg", "titulo": "Nunca contrate quem você não pode demitir", "assunto": "Contratação / gestão", "destaque": false, "inicio": "06:45", "fim": "07:30", "inicio_sec": 405.0, "dur_sec": 45.0, "duracao": "45s", "descricao": "Gustavo explica por que jamais contrata parente ou filho de amigo: se a pessoa não performa, você tem que demitir, e aí perde a relação e o funcionário de uma vez.", "legenda": "A regra que todo dono de loja deveria seguir: só contrate quem você conseguiria demitir. Contratou o filho do amigo? Prepare o coração. Salva esse aqui e chama a gente no direct do @repasse_podcast.", "motivo": "Opinião polêmica + identificação: todo empresário já viveu o dilema de contratar conhecido."}, {"id": "03", "arquivo": "videos/corte-03.mp4", "poster": "videos/poster-03.jpg", "titulo": "A técnica do áudio: 4 perguntas que revelam o vendedor", "assunto": "Recrutamento / vendas", "destaque": false, "inicio": "08:47", "fim": "10:37", "inicio_sec": 527.0, "dur_sec": 110.0, "duracao": "110s", "descricao": "Antes de chamar o candidato na loja, Gustavo manda um áudio com 4 perguntas objetivas. De cada 100 que entram em contato, só 10 respondem no detalhe. O raciocínio: quem não escuta e responde na contratação também não vai escutar o cliente na venda.", "legenda": "O filtro de contratação mais barato que existe: um áudio com 4 perguntas. De 100 candidatos, 10 respondem direito. Testa e me conta o resultado no direct do @repasse_podcast.", "motivo": "Sacada de autoridade replicável, direto pro público de lojistas. Alta chance de save/compartilhamento."}, {"id": "04", "arquivo": "videos/corte-04.mp4", "poster": "videos/poster-04.jpg", "titulo": "85% da compra do carro quem decide é a esposa", "assunto": "Vendas / comportamento", "destaque": true, "inicio": "12:47", "fim": "13:28", "inicio_sec": 767.0, "dur_sec": 41.0, "duracao": "41s", "descricao": "Dado que faz todo vendedor balançar a cabeça: em 85% das compras de carro por casais, quem decide é a mulher. Daí a clássica objeção do tem que falar com a esposa.", "legenda": "85% da decisão de comprar o carro é da esposa. Não subestima quem tá do lado do cliente. Marca aquele vendedor que precisa ver isso.", "motivo": "Número seco + identificação imediata do nicho automotivo. Gancho de altíssima retenção."}, {"id": "05", "arquivo": "videos/corte-05.mp4", "poster": "videos/poster-05.jpg", "titulo": "O vendedor estrela que destrói o time", "assunto": "Liderança / cultura", "destaque": false, "inicio": "21:23", "fim": "22:14", "inicio_sec": 1283.0, "dur_sec": 51.0, "duracao": "51s", "descricao": "Tem gente que não muda por mais feedback que receba. A hora que o líder não tem coragem de dizer adeus ao comportamento tóxico, ele contamina o time inteiro, porque comportamento se copia. A forma como você trata o colaborador é a forma como ele trata o cliente.", "legenda": "Segurar o vendedor tóxico só porque ele vende destrói o resto do time. Comportamento se copia. A forma como você trata o colaborador é a forma como ele trata o cliente.", "motivo": "Verdade que dói + autoridade. Frase-espelho altamente compartilhável."}, {"id": "06", "arquivo": "videos/corte-06.mp4", "poster": "videos/poster-06.jpg", "titulo": "NR1: 7 Maracanãs lotados de afastados por doença", "assunto": "Legislação / gestão", "destaque": false, "inicio": "22:37", "fim": "24:09", "inicio_sec": 1357.0, "dur_sec": 92.0, "duracao": "92s", "descricao": "Mariana explica a NR1, a norma mãe do trabalho, que agora olha os riscos psicossociais. O número que assusta: no ano passado foram 546 mil pessoas afastadas por doença, o equivalente a 7 Maracanãs lotados, sendo 80% doença mental.", "legenda": "546 mil afastados por doença em um ano, o equivalente a 7 Maracanãs lotados, e 80% é saúde mental. A NR1 chegou pra mudar como sua empresa cuida disso. Sua loja tá preparada?", "motivo": "Assunto quente (lei nova) + número chocante + urgência. Forte apelo para empresários."}, {"id": "07", "arquivo": "videos/corte-07.mp4", "poster": "videos/poster-07.jpg", "titulo": "Meta impossível adoece o seu time", "assunto": "Gestão / metas", "destaque": false, "inicio": "26:23", "fim": "27:10", "inicio_sec": 1583.0, "dur_sec": 47.0, "duracao": "47s", "descricao": "A NR1 não proíbe meta, sem meta a conta não fecha. O que ela cobra é meta possível. Saltar de 50% pra 100% do nada não motiva, adoece o colaborador porque ele sabe que não vai alcançar.", "legenda": "Meta não é problema. Meta impossível é. Pular de 50% pra 100% do nada não motiva, adoece o time. Como estão as metas da sua loja?", "motivo": "Autoridade prática + tema sensível de gestão que gera debate."}, {"id": "08", "arquivo": "videos/corte-08.mp4", "poster": "videos/poster-08.jpg", "titulo": "Liderar pelo exemplo: pega o telefone e liga", "assunto": "Liderança", "destaque": true, "inicio": "35:04", "fim": "36:06", "inicio_sec": 2104.0, "dur_sec": 62.0, "duracao": "62s", "descricao": "Num plantão de domingo, em vez de mandar os vendedores trabalharem sozinhos, Gustavo pega o telefone e começa a ligar pros clientes. A energia propaga: o vendedor vê o dono ligando e começa a ligar também. Liderar pelo exemplo não tem erro.", "legenda": "Quer que o time ligue pro cliente? Pega o telefone e liga primeiro. A energia propaga. Liderar pelo exemplo não tem erro. Marca um líder que precisa ver isso.", "motivo": "História curta com punch + princípio universal de liderança. Alta identificação."}, {"id": "09", "arquivo": "videos/corte-09.mp4", "poster": "videos/poster-09.jpg", "titulo": "Geração Z não vai rampar ligando (e como usar isso)", "assunto": "Gestão de gerações", "destaque": false, "inicio": "41:21", "fim": "42:44", "inicio_sec": 2481.0, "dur_sec": 83.0, "duracao": "83s", "descricao": "Pedir pra um vendedor da geração Z bater telefone o dia todo é receita pra ele adoecer, ele não cresceu com ligação. A saída: deixa o Z captar pelo WhatsApp e pela IA e passa o lead quente pro perfil que ama ligar. Venda casada dentro do próprio time.", "legenda": "Cobrar ligação de um vendedor geração Z é queimar ele à toa. Deixa o Z captar no digital e passa o lead pro que ama telefone. Cada um no seu forte, a meta fecha no fim.", "motivo": "Tema geracional (viraliza) + solução prática de escala do time."}, {"id": "10", "arquivo": "videos/corte-10.mp4", "poster": "videos/poster-10.jpg", "titulo": "O vendedor bateria: não vende 10 dias, depois arrebenta", "assunto": "Gestão de pessoas", "destaque": true, "inicio": "50:34", "fim": "52:22", "inicio_sec": 3034.0, "dur_sec": 108.0, "duracao": "108s", "descricao": "Gustavo tem vendedor que do dia 1 ao 10 não vende quase nada, e depois do dia 15 vira um supermercado. Mariana explica com a metáfora da bateria do celular: nos primeiros dias o cara está recarregando pra depois arrebentar. Gestão é respeitar o tempo de cada um.", "legenda": "Tem vendedor que passa 10 dias devagar e depois arrebenta a meta. É a bateria dele recarregando. Gestão de verdade é respeitar o tempo de cada um. Você lidera assim ou já brigou por isso?", "motivo": "História real + metáfora que gruda (a bateria). Muito relacionável para qualquer gestor."}, {"id": "11", "arquivo": "videos/corte-11.mp4", "poster": "videos/poster-11.jpg", "titulo": "Quando acerta, ninguém fala; quando erra, crucifica", "assunto": "Liderança / feedback", "destaque": false, "inicio": "69:26", "fim": "70:12", "inicio_sec": 4166.0, "dur_sec": 46.0, "duracao": "46s", "descricao": "Perguntando por que vendedores querem sair de outras lojas, Gustavo ouve sempre a mesma coisa: não é dinheiro, é falta de valorização. Quando acertam, ninguém fala nada; quando erram, crucificam. A cura é simples: acertou, elogia; errou, corrige com calma.", "legenda": "Sabe por que seu melhor vendedor pede pra sair? Não é o salário. É que quando ele acerta ninguém fala nada, e quando erra é crucificado. Acertou, elogia. Errou, corrige com calma.", "motivo": "Verdade que dói + identificação de quem já foi colaborador. Gera comentário."}, {"id": "12", "arquivo": "videos/corte-12.mp4", "poster": "videos/poster-12.jpg", "titulo": "Cuidar das pessoas não é gentileza, é estratégia", "assunto": "Gestão / resultado", "destaque": false, "inicio": "71:21", "fim": "72:02", "inicio_sec": 4281.0, "dur_sec": 41.0, "duracao": "41s", "descricao": "Mariana fecha a lógica: cuidar das pessoas não é um ato de gentileza, é uma decisão estratégica. Colaborador cuidado gera mais lucro e sustentabilidade, porque a IA faz a triagem, mas quem constrói relacionamento e fecha a venda são as pessoas.", "legenda": "Cuidar das pessoas não é gentileza, é decisão estratégica. A IA faz a triagem, mas quem fecha a venda é gente. Colaborador bem cuidado dá mais lucro. Salva pra lembrar.", "motivo": "Autoridade + tese que ancora o episódio. Bom encerramento e citação forte."}, {"id": "13", "arquivo": "videos/corte-13.mp4", "poster": "videos/poster-13.jpg", "titulo": "Levou o vendedor pra andar de jet: pessoas não são custo", "assunto": "Liderança / cultura", "destaque": true, "inicio": "77:46", "fim": "79:20", "inicio_sec": 4666.0, "dur_sec": 94.0, "duracao": "94s", "descricao": "Um vendedor que arrebenta meta passou dois dias muito mal. Gustavo mandou ele pegar as coisas, foram andar de jet ski o dia inteiro. No dia seguinte era outra pessoa. Perdeu um dia de trabalho e ganhou um funcionário leal. Pessoas não são custo.", "legenda": "O vendedor tava mal, então largamos tudo e fomos andar de jet o dia inteiro. No outro dia ele era outra pessoa. Perdi um dia, ganhei lealdade. Pessoas não são custo.", "motivo": "História com emoção + virada + lição de negócio. Aposta principal de viralização e feel-good."}], "blocos": [{"id": "b01", "arquivo": "videos/bloco-01.mp4", "poster": "videos/poster-b01.jpg", "titulo": "Como contratar sem errar (o teste do áudio)", "assunto": "Contratação / processo", "inicio": "01:55", "fim": "10:43", "inicio_sec": 115.0, "dur_sec": 528.0, "duracao": "8:48", "hook": "Qual é o maior erro que o empresário comete na hora de contratar?", "hook_porque": "Pergunta que abre loop logo na abertura da entrevista: o dono quer saber na hora se comete esse erro.", "titulos": ["O erro de contratação que quebra o caixa da sua loja", "O teste de áudio que revela o vendedor em 4 perguntas", "Contrata pelo técnico, demite pelo comportamento"], "thumb": "09:10", "thumb_sec": 550.0, "midroll": "06:45", "midroll_sec": 405.0, "resumo": "Um processo de contratação que filtra o vendedor certo, do perfil ao teste prático do áudio.", "score": 8.7, "flags": "Entrada logo após a apresentação da convidada; conferir 3s de entrada (o bloco se sustenta sozinho)."}, {"id": "b02", "arquivo": "videos/bloco-02.mp4", "poster": "videos/poster-b02.jpg", "titulo": "A NR1 e a bomba da saúde mental no trabalho", "assunto": "Legislação / gestão", "inicio": "22:16", "fim": "30:30", "inicio_sec": 1336.0, "dur_sec": 494.0, "duracao": "8:14", "hook": "Já ouviu falar da NR1? Essa aqui deu medo.", "hook_porque": "Abre loop e cria tensão: uma lei nova que assusta o empresário e quase ninguém explicou direito.", "titulos": ["NR1: a lei que pode multar sua loja em R$18 mil", "546 mil afastados: a bomba da saúde mental chegou nas empresas", "O que muda na hora de cobrar meta com a NR1"], "thumb": "23:50", "thumb_sec": 1430.0, "midroll": "26:20", "midroll_sec": 1580.0, "resumo": "A nova norma que obriga a empresa a cuidar da saúde mental do time, o que fiscaliza e o risco de multa.", "score": 8.9, "flags": "Cita valor de multa, que pode desatualizar com o tempo."}, {"id": "b03", "arquivo": "videos/bloco-03.mp4", "poster": "videos/poster-b03.jpg", "titulo": "Por que promover seu melhor vendedor a gerente é cilada", "assunto": "Liderança / promoção", "inicio": "33:32", "fim": "42:44", "inicio_sec": 2012.0, "dur_sec": 552.0, "duracao": "9:12", "hook": "O que o lojista tem que olhar na hora de promover alguém?", "hook_porque": "Pergunta prática que todo dono enfrenta e quase todo mundo erra ao promover pelo resultado de vendas.", "titulos": ["Por que promover seu melhor vendedor a gerente é uma cilada", "Liderar pelo exemplo: o dono que pega o telefone e liga", "Alpinista, campista ou desistente: o perfil do seu vendedor"], "thumb": "35:30", "thumb_sec": 2130.0, "midroll": "38:13", "midroll_sec": 2293.0, "resumo": "A diferença entre vender bem e liderar, e como conduzir cada perfil de vendedor, inclusive a geração Z.", "score": 8.5, "flags": "Sem riscos identificados."}, {"id": "b04", "arquivo": "videos/bloco-04.mp4", "poster": "videos/poster-b04.jpg", "titulo": "Por que seu melhor vendedor vai embora (não é o salário)", "assunto": "Liderança / retenção", "inicio": "72:47", "fim": "82:00", "inicio_sec": 4367.0, "dur_sec": 553.0, "duracao": "9:13", "hook": "Os melhores profissionais saem por salário ou por ambiente?", "hook_porque": "Pergunta que abre loop e a resposta seca (Liderança) quebra a expectativa de quem acha que é dinheiro.", "titulos": ["Por que seu melhor vendedor vai embora (não é o salário)", "Ele largou tudo e levou o vendedor pra andar de jet ski", "Pessoas não são custo: o segredo de reter talento"], "thumb": "78:00", "thumb_sec": 4680.0, "midroll": "76:00", "midroll_sec": 4560.0, "resumo": "Por que os melhores pedem pra sair e como valorização e liderança pelo exemplo seguram o time.", "score": 9.2, "flags": "Sem riscos identificados. Bloco mais forte, com pico emocional na história do jet ski."}]}; const API="https://mediagrowth.com.br/cortes-api/api.php"; const SLUG="repasse-mariana"; const KEY="valida_"+SLUG;
 let estado={full:[],cortes:{}}; let alvoAtual={alvo:'',id:'',decisao:'',nota:0}; let avgs={};
 const TIT={aprovado:'Aprovar',alteracoes:'Pedir alterações',reprovado:'Reprovar',nota:'Dar nota'};
 const TAG={aprovado:'✓ Aprovou',alteracoes:'✎ Pediu alterações',reprovado:'✗ Reprovou',nota:'★ Nota'};
@@ -645,15 +840,16 @@ function paintRate(id){const mine=myNota(id);starsEl(id).forEach(s=>{const v=+s.
   if(avgs[id])setBig(id,avgs[id].toFixed(1),true);else if(mine>0)setBig(id,mine,true);else setBig(id,'-',false);}
 function rateClick(id,n){localStorage.setItem(KEY+'_nota_'+id,n);paintRate(id);const nome=localStorage.getItem(KEY+'_nome')||'';if(!nome){abrir('corte',id,'nota',n);return;}saveNota(id,n,nome,'');}
 async function saveNota(id,n,nome,obs){try{const body=new URLSearchParams({action:'append',slug:SLUG,alvo:'corte',id,decisao:'nota',nota:String(n),obs:obs||'',nome});const r=await fetch(API,{method:'POST',body});const st=await r.json();if(st&&!st.erro){aplicar(st);toast('nota '+n+' salva ✓');}else{toast('erro: '+((st&&st.erro)||'?'));}}catch(e){toast('erro ao salvar nota');}}
-function reorderCards(){const grid=document.querySelector('.grid');if(!grid)return;
+function reorderGrid(grid){if(!grid)return;
   const cur=Array.from(grid.querySelectorAll('.card'));
   const anyNota=cur.some(c=>aslist(estado.cortes[c.dataset.cid]).some(e=>e.decisao==='nota'&&e.nota));
   const info=cid=>{const l=aslist(estado.cortes[cid]);const ns=l.filter(e=>e.decisao==='nota'&&e.nota).map(e=>+e.nota);
-    const avg=ns.length?ns.reduce((a,b)=>a+b,0)/ns.length:-1;const idx=DADOS.cortes.findIndex(c=>c.id===cid);return{avg,cnt:ns.length,idx};};
+    return{avg:ns.length?ns.reduce((a,b)=>a+b,0)/ns.length:-1,cnt:ns.length};};
   const sorted=cur.slice().sort((a,b)=>{const A=info(a.dataset.cid),B=info(b.dataset.cid);
-    if(B.avg!==A.avg)return B.avg-A.avg;if(B.cnt!==A.cnt)return B.cnt-A.cnt;return A.idx-B.idx;});
+    if(B.avg!==A.avg)return B.avg-A.avg;if(B.cnt!==A.cnt)return B.cnt-A.cnt;return (+a.dataset.idx)-(+b.dataset.idx);});
   sorted.forEach((c,i)=>{const r=c.querySelector('.rank');if(r)r.textContent=anyNota?('#'+(i+1)):'';});
   const same=cur.every((c,i)=>c===sorted[i]);if(!same)sorted.forEach(c=>grid.appendChild(c));}
+function reorderCards(){document.querySelectorAll('.grid').forEach(reorderGrid);}
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));}
 function quando(at){if(!at)return'';const d=new Date(at);if(isNaN(d))return'';const p=n=>String(n).padStart(2,'0');return p(d.getDate())+'/'+p(d.getMonth()+1)+' '+p(d.getHours())+':'+p(d.getMinutes());}
 function abrir(alvo,id,dec,nota){alvoAtual={alvo,id,decisao:dec,nota:nota||0};const t=alvo==='corte'?('corte '+id):'podcast inteiro';const noun=alvo==='corte'?'corte':'podcast';const cfg=MSG[dec];
@@ -676,17 +872,18 @@ function dominante(list){if(!list||!list.length)return'';const c={aprovado:0,alt
 function setDom(el,dec){if(!el)return;el.classList.remove('dom-ok','dom-adj','dom-no');if(DOM[dec])el.classList.add(DOM[dec]);}
 function aplicar(st){if(!st)return;estado.full=aslist(st.full);estado.cortes=(st.cortes&&typeof st.cortes==='object'&&!Array.isArray(st.cortes))?st.cortes:{};
   $('feed-full').innerHTML=feedHTML(estado.full);setDom($('fulldec'),dominante(estado.full));let tot=estado.full.length;
-  DADOS.cortes.forEach(c=>{const l=aslist(estado.cortes[c.id]);tot+=l.length;const el=$('feed-'+c.id);if(el)el.innerHTML=feedHTML(l);setDom($('card-'+c.id),dominante(l));
+  const proc=c=>{const l=aslist(estado.cortes[c.id]);tot+=l.length;const el=$('feed-'+c.id);if(el)el.innerHTML=feedHTML(l);setDom($('card-'+c.id),dominante(l));
     const ns=l.filter(e=>e.decisao==='nota'&&e.nota).map(e=>+e.nota);const av=$('rateavg-'+c.id);
     avgs[c.id]=ns.length?(ns.reduce((a,b)=>a+b,0)/ns.length):0;
     if(av)av.textContent=ns.length?('média '+avgs[c.id].toFixed(1)+' · '+ns.length+(ns.length===1?' nota':' notas')):'sem notas ainda';
-    paintRate(c.id);});
+    paintRate(c.id);};
+  DADOS.cortes.forEach(proc);(DADOS.blocos||[]).forEach(proc);
   reorderCards();
   const r=$('resumo');if(r)r.textContent=tot+(tot===1?' avaliação recebida':' avaliações recebidas');}
 async function tick(){try{const r=await fetch(API+'?action=get&slug='+encodeURIComponent(SLUG),{cache:'no-store'});aplicar(await r.json());}catch(e){}}
 $('modal').addEventListener('click',e=>{if(e.target===$('modal'))fechar();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')fechar();});
-DADOS.cortes.forEach(c=>paintRate(c.id));
+DADOS.cortes.forEach(c=>paintRate(c.id));(DADOS.blocos||[]).forEach(c=>paintRate(c.id));
 tick();setInterval(tick,12000);
 </script>
 </body></html>
