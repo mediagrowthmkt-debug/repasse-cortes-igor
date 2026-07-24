@@ -83,6 +83,8 @@
   .orgthumb.done{filter:grayscale(.35);opacity:.7}
   .orgthumb .thlab{position:absolute;top:0;left:0;right:0;height:14px;line-height:14px;font-size:8px;font-weight:800;color:#fff;background:var(--org);text-align:center;letter-spacing:.4px}
   .orgthumb.pago .thlab{background:var(--blue)}
+  .orgthumb.pago.fim{border-style:dashed}
+  .orgthumb.pago.fim .thlab.fimlab{background:#00224a}
   .orgthumb i{position:absolute;left:50%;top:25px;transform:translateX(-50%);font-style:normal;font-size:8px;color:#fff;background:rgba(0,0,0,.6);width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center}
   /* etiqueta de anuncio pago (uma por dia do periodo) */
   .pgbar{display:block;height:15px;line-height:15px;margin-top:3px;background:var(--blue);color:#fff;font-size:8.6px;font-weight:800;padding:0 4px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;cursor:pointer}
@@ -350,11 +352,8 @@ function render(){
   const cs=D.cortes||[];
   const nowd=new Date(); nowd.setHours(0,0,0,0);
   const total=pt.total_posts||cs.length||4;
-  const feitos=cs.filter(c=>{
-    const live=(c.status==="publicado"||c.status==="no_ar");
-    const passou=c.sobe_em && dpar(c.sobe_em)<=nowd;
-    return live||passou;
-  }).length;
+  // "turbinados no ar" = anúncios cujo INÍCIO já chegou (segue o cronograma real; mover p/ frente reduz a barra)
+  const feitos=cs.filter(c=> (c.pago_ini && dpar(c.pago_ini)<=nowd) || c.status==="publicado").length;
   const done=Math.min(feitos,total);
   const pct=total?Math.round(done/total*100):0;
   $("progFill").style.width=pct+"%";
@@ -411,9 +410,9 @@ function renderCal(){
       const list=segs[key]||[]; let cont="";
       const clkP=k=>EDIT?"":`onclick="openPopup('${k}','CID');event.stopPropagation()"`;
       list.filter(s=>s.kind==="pago").forEach(s=>{
-        if(s.pos==="start"||s.pos==="solo"){ cont+=`<span class="orgthumb pago ${EDIT?'drag':''}" data-kind="pago" data-cid="${esc(s.cid)}" ${clkP('pago').replace('CID',esc(s.cid))} style="background-image:url('${esc(s.poster||'')}')" title="Anúncio pago — ${esc(s.titulo)}${EDIT?' (arraste p/ mover o período)':''}"><b class="thlab">🔵 PAGO</b><i>🚀</i></span>`; }
-        else if(s.pos==="end"){ cont+=`<span class="pgbar end ${EDIT?'drag':''}" data-kind="pagofim" data-cid="${esc(s.cid)}" ${clkP('pago').replace('CID',esc(s.cid))} title="Fim do anúncio — ${esc(s.titulo)}${EDIT?' (arraste p/ mudar o fim)':''}">🏁 fim anúncio</span>`; }
-        /* dias do meio: sem etiqueta, pra nao poluir */
+        if(s.pos==="mid") return; // dias do meio: nada, pra nao poluir
+        if(s.pos==="start"||s.pos==="solo"){ cont+=`<span class="orgthumb pago ${EDIT?'drag':''}" data-kind="pago" data-cid="${esc(s.cid)}" ${clkP('pago').replace('CID',esc(s.cid))} style="background-image:url('${esc(s.poster||'')}')" title="Início do anúncio — ${esc(s.titulo)}${EDIT?' (arraste p/ mover o início)':''}"><b class="thlab">🔵 INÍCIO</b><i>🚀</i></span>`; }
+        else if(s.pos==="end"){ cont+=`<span class="orgthumb pago fim ${EDIT?'drag':''}" data-kind="pagofim" data-cid="${esc(s.cid)}" ${clkP('pago').replace('CID',esc(s.cid))} style="background-image:url('${esc(s.poster||'')}')" title="Fim do anúncio — ${esc(s.titulo)}${EDIT?' (arraste p/ mover o fim)':''}"><b class="thlab fimlab">🏁 FIM</b><i>🏁</i></span>`; }
       });
       list.filter(s=>s.kind==="org").forEach(s=>{ cont+=`<span class="orgthumb org ${EDIT?'drag':''}" data-kind="org" data-cid="${esc(s.cid)}" ${clkP('org').replace('CID',esc(s.cid))} style="background-image:url('${esc(s.poster||'')}')" title="${esc(s.titulo)} — publicação orgânica${EDIT?' (arraste p/ mover)':''}"><b class="thlab">🟢 ORGÂNICO</b><i>▶</i></span>`; });
       list.filter(s=>s.kind==="orgtext").forEach(s=>{ cont+=`<span class="chip org ${s.done?'done':''}">${esc(s.label)}</span>`; });
@@ -439,8 +438,8 @@ function dayUnder(x,y){ let el=document.elementFromPoint(x,y), g=0; while(el && 
 function applyMove(kind,cid,day){
   const c=(D.cortes||[]).find(x=>x.id===cid); if(!c) return;
   if(kind==="org"){ c.sobe_em=day; }
-  else if(kind==="pago"){ const days=dateRange(c.pago_ini,c.pago_fim); const dur=Math.max(1,days.length); const s=dpar(day); const en=new Date(s); en.setDate(en.getDate()+dur-1); c.pago_ini=day; c.pago_fim=isoOf(en); }
-  else if(kind==="pagofim"){ if(c.pago_ini && dpar(day)<dpar(c.pago_ini)){ c.pago_fim=c.pago_ini; } else { c.pago_fim=day; } }
+  else if(kind==="pago"){ c.pago_ini=day; if(c.pago_fim && dpar(day)>dpar(c.pago_fim)) c.pago_fim=day; }   // move só o INÍCIO
+  else if(kind==="pagofim"){ c.pago_fim=day; if(c.pago_ini && dpar(day)<dpar(c.pago_ini)) c.pago_ini=day; }  // move só o FIM
   renderCal(); renderCortes(); renderTL(); scheduleSave();
 }
 function wireCalDrag(){
