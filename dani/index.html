@@ -397,25 +397,25 @@ function openPopup(kind,cid){
   const c=(D.cortes||[]).find(x=>x.id===cid); if(!c)return;
   const box=$("modal"), body=$("modalBody"); if(!box||!body)return;
   const prof=igProfile(), handle=igHandle();
-  let h="";
-  if(kind==="org"){
-    const media=c.video?`<video class="mvid" playsinline controls poster="${esc(c.poster||'')}"><source src="${esc(c.video)}"></video>`:(c.poster?`<img class="mvid" src="${esc(c.poster)}">`:"");
-    const stL={agendado:"Agendado",no_ar:"No ar",publicado:"Publicado"}[c.status||"agendado"];
-    const dest=c.link||prof, lbl=c.link?"📲 Ver este corte no Instagram":("📲 Ver no Instagram "+handle);
-    h=`<div class="mtag" style="background:var(--org)">Corte · publicação orgânica</div><h3>${esc(corteTit(c))}</h3>${media}
-       <p>🟢 <b>Sobe (orgânico):</b> ${c.sobe_em?fmtBR(c.sobe_em):"a definir"}<br>📌 <b>Status:</b> ${stL}${c.pago_ini?`<br>🔵 <b>Impulsionado:</b> ${fmtBR(c.pago_ini)} a ${fmtBR(c.pago_fim)}`:""}</p>
-       ${dest?`<a class="mbtn" href="${esc(dest)}" target="_blank" rel="noopener">${lbl}</a>`:""}`;
-    if(EDIT){ h+=`<label class="mbtn edit" style="cursor:pointer">🎬 Trocar vídeo do corte<input type="file" accept="video/*,.mov,.mp4" style="display:none" onchange="trocarMidia(this,'${esc(cid)}','video')"></label>
-      <label class="mbtn edit" style="cursor:pointer">📷 Trocar capa<input type="file" accept="image/*" style="display:none" onchange="trocarMidia(this,'${esc(cid)}','poster')"></label>`; }
-  } else {
+  const media=c.video?`<video class="mvid" playsinline controls poster="${esc(c.poster||'')}"><source src="${esc(c.video)}"></video>`:(c.poster?`<img class="mvid" src="${esc(c.poster)}">`:"");
+  const dest=c.link||prof, verlbl=c.link?"📲 Ver este corte no Instagram":("📲 Ver no Instagram "+handle);
+  const stL={agendado:"Agendado",no_ar:"No ar",publicado:"Publicado"}[c.status||"agendado"];
+  let tag, info;
+  if(kind==="pago"){
     const cp=D.campanha||{};
-    h=`<div class="mtag" style="background:var(--blue)">Anúncio pago (impulsionamento)</div><h3>${esc(corteTit(c))}</h3>
-       <p>🔵 <b>O anúncio roda:</b> ${c.pago_ini?(fmtBR(c.pago_ini)+" a "+fmtBR(c.pago_fim)):"a definir"}<br>
-          🎯 <b>Objetivo:</b> levar cliques e visitas ao seu Instagram<br>
-          👥 <b>Público:</b> ${esc(cp.publico||"lojistas de veículos")}<br>
-          📍 <b>Região:</b> ${esc(cp.regiao||"a definir")}</p>`;
+    tag=`<div class="mtag" style="background:var(--blue)">Anúncio pago (impulsionamento)</div>`;
+    info=`<p>🔵 <b>O anúncio roda:</b> ${c.pago_ini?(fmtBR(c.pago_ini)+" a "+fmtBR(c.pago_fim)):"a definir"}<br>
+       🎯 <b>Objetivo:</b> levar cliques e visitas ao seu Instagram<br>
+       👥 <b>Público:</b> ${esc(cp.publico||"lojistas de veículos")}<br>
+       📍 <b>Região:</b> ${esc(cp.regiao||"a definir")}</p>`;
+  } else {
+    tag=`<div class="mtag" style="background:var(--org)">Corte · publicação orgânica</div>`;
+    info=`<p>🟢 <b>Sobe (orgânico):</b> ${c.sobe_em?fmtBR(c.sobe_em):"a definir"}<br>📌 <b>Status:</b> ${stL}${c.pago_ini?`<br>🔵 <b>Impulsionado:</b> ${fmtBR(c.pago_ini)} a ${fmtBR(c.pago_fim)}`:""}</p>`;
   }
-  if(EDIT) h+=`<button class="mbtn edit" onclick="closePopup();editCorte('${esc(cid)}')">✏️ editar datas</button>`;
+  let h=`${tag}<h3>${esc(corteTit(c))}</h3>${media}${info}${dest?`<a class="mbtn" href="${esc(dest)}" target="_blank" rel="noopener">${verlbl}</a>`:""}`;
+  if(EDIT){ h+=`<button class="mbtn edit" onclick="closePopup();editCorte('${esc(cid)}')">✏️ editar corte (datas · anúncio · link)</button>
+    <label class="mbtn edit" style="cursor:pointer">🎬 Trocar vídeo<input type="file" accept="video/*,.mov,.mp4" style="display:none" onchange="trocarMidia(this,'${esc(cid)}','video')"></label>
+    <label class="mbtn edit" style="cursor:pointer">📷 Trocar capa<input type="file" accept="image/*" style="display:none" onchange="trocarMidia(this,'${esc(cid)}','poster')"></label>`; }
   body.innerHTML=h; box.style.display="flex";
 }
 function closePopup(){ const b=$("modal"); if(b) b.style.display="none"; const v=document.querySelector('#modalBody video'); if(v){try{v.pause();}catch(e){}} }
