@@ -375,9 +375,9 @@ function dateRange(a,b){ const out=[]; let d=dpar(a),e=dpar(b); if(!d||!e)return
 function calSegments(){
   const seg={}; const push=(k,o)=>{ (seg[k]=seg[k]||[]).push(o); };
   (D.cortes||[]).forEach(c=>{
-    if(c.sobe_em) push(String(c.sobe_em).slice(0,10),{kind:"org",cid:c.id,poster:c.poster,titulo:corteTit(c),done:c.status==="publicado"});
+    if(c.sobe_em) push(String(c.sobe_em).slice(0,10),{kind:"org",cid:c.id,poster:posterOf(c),titulo:corteTit(c),done:c.status==="publicado"});
     if(c.pago_ini && c.pago_fim){ const days=dateRange(c.pago_ini,c.pago_fim);
-      days.forEach((day,i)=>push(day,{kind:"pago",cid:c.id,titulo:corteTit(c),poster:c.poster,pos:days.length===1?"solo":(i===0?"start":(i===days.length-1?"end":"mid"))})); }
+      days.forEach((day,i)=>push(day,{kind:"pago",cid:c.id,titulo:corteTit(c),poster:posterOf(c),pos:days.length===1?"solo":(i===0?"start":(i===days.length-1?"end":"mid"))})); }
   });
   (D.organicos||[]).forEach(o=>{ if(o.data) push(String(o.data).slice(0,10),{kind:"orgtext",label:o.tipo||"Post",done:o.status==="publicado"}); });
   return seg;
@@ -461,17 +461,27 @@ let admin=null;
 function nextCorteId(){ const ids=(D.cortes||[]).map(c=>parseInt(c.id,10)||0); return String((ids.length?Math.max(...ids):0)+1).padStart(2,"0"); }
 function pickerDefaultMonth(c){ const base=(c&&(c.sobe_em||c.pago_ini))||(D.patrocinio||{}).inicio; const d=dpar(base)||new Date(); return {y:d.getFullYear(), m:d.getMonth()}; }
 function corteTipo(c){ return c.tipo || (c.pago_ini&&c.sobe_em?"ambos":(c.pago_ini?"pago":"organico")); }
+function igShortcode(link){ const m=String(link||"").match(/instagram\.com\/(?:p|reel|reels|tv)\/([^\/?#]+)/i); return m?m[1]:""; }
+function igThumb(link){ const s=igShortcode(link); return s?("https://www.instagram.com/p/"+s+"/media/?size=l"):""; }
+function posterOf(c){ if(c.poster && !/instagram\.com/i.test(c.poster)) return c.poster; if(c.link) return igThumb(c.link); return c.poster||""; }
 function corteMediaHTML(c){
   if(c.link){ const u=c.link.endsWith('/')?c.link:c.link+'/'; return `<blockquote class="instagram-media" data-instgrm-permalink="${esc(u)}" data-instgrm-version="14" style="margin:0;width:100%;min-width:0;border:0"></blockquote>`; }
   if(c.video) return `<video class="mvid" playsinline controls poster="${esc(c.poster||'')}"><source src="${esc(c.video)}"></video>`;
   if(c.poster) return `<img class="mvid" src="${esc(c.poster)}">`;
   return `<div class="mvid" style="display:flex;align-items:center;justify-content:center;color:#7d93a8;font-size:13px;text-align:center;padding:10px">Envie um vídeo ou cole um link do Instagram e toque em "Usar este link"</div>`;
 }
-function adminUseLink(){
+async function adminUseLink(){
   const c=(D.cortes||[]).find(x=>x.id===admin.cid); if(!c)return;
   const inp=document.querySelector('#modalBody input[data-adm="link"]'); const v=(inp?inp.value:(c.link||'')).trim();
   if(!/instagram\.com\//i.test(v)){ alert('Cole um link válido do Instagram (reel ou post).'); return; }
-  c.link=v; scheduleSave(); renderCorteAdmin(); renderCal(); renderCortes();
+  c.link=v; delete c.poster;   // link assume: limpa a capa do vídeo antigo
+  scheduleSave(); renderCorteAdmin(); renderCal(); renderCortes();
+  // baixa a capa do reel pelo backend (o Instagram bloqueia a imagem chamada direto do navegador)
+  if(TOKEN){ try{
+    const fd=new FormData(); fd.append('action','igthumb'); fd.append('slug',(D.convidado||{}).slug||''); fd.append('token',TOKEN); fd.append('link',v);
+    const r=await fetch(API_BASE,{method:'POST',body:fd}); const j=await r.json();
+    if(j&&j.url){ c.poster=j.url; scheduleSave(); renderCorteAdmin(); renderCal(); renderCortes(); }
+  }catch(e){} }
 }
 function openCorteAdmin(cid){ const c=(D.cortes||[]).find(x=>x.id===cid); if(!c)return; const tp=corteTipo(c); admin={cid, tipo:tp, mode:(tp==="pago"?"pago":"org"), month:pickerDefaultMonth(c), rangeStart:null}; renderCorteAdmin(); }
 function addCorte(){ if(!EDIT)return; const id=nextCorteId(); const sem=(D.cortes||[]).length+1; D.cortes=D.cortes||[]; D.cortes.push({id, semana:sem, titulo:"Corte "+sem, status:"agendado", tipo:"organico"}); scheduleSave(); admin={cid:id, tipo:"organico", mode:"org", month:pickerDefaultMonth(), rangeStart:null}; renderCorteAdmin(); }
@@ -532,9 +542,9 @@ function adminClearLink(){ const c=(D.cortes||[]).find(x=>x.id===admin.cid); if(
 async function adminVideo(inp){ const f=inp.files&&inp.files[0]; if(!f)return; if(!TOKEN){ alert('Abra com o link de edição (com token) para enviar arquivos.'); return; }
   const c=(D.cortes||[]).find(x=>x.id===admin.cid); if(!c)return; const lab=inp.parentElement, txt=lab.childNodes[0]; const old=txt?txt.nodeValue:'';
   if(txt) txt.nodeValue='enviando…';
-  try{ const url=await uploadFile(f,'video'); if(!url){alert('Falha no upload.');return;} c.video=url; c.link=c.link||'';
+  try{ const url=await uploadFile(f,'video'); if(!url){alert('Falha no upload.');return;} c.video=url; delete c.link;   // vídeo enviado assume no lugar do link
     try{ const blob=await capturePosterFromFile(f); if(blob){ const purl=await uploadFile(blob,'poster'); if(purl) c.poster=purl; } }catch(e){}
-    scheduleSave(); renderCorteAdmin(); renderCal(); renderCortes(); alert('Vídeo enviado!');
+    scheduleSave(); renderCorteAdmin(); renderCal(); renderCortes(); alert('Vídeo enviado! Já aparece na grade e no calendário.');
   }catch(e){ alert('Erro: '+(e.message||e)); } finally{ if(txt) txt.nodeValue=old; } }
 function adminDel(){ const c=(D.cortes||[]).find(x=>x.id===admin.cid); if(!c)return; if(!confirm('Excluir '+(c.titulo||'este corte')+'?'))return; D.cortes=(D.cortes||[]).filter(x=>x.id!==admin.cid); closePopup(); renderCal(); renderCortes(); renderTL(); scheduleSave(); }
 function adminDone(){ closePopup(); renderCal(); renderCortes(); renderTL(); scheduleSave(); }
@@ -578,16 +588,19 @@ function renderCortes(){
   }
   $("cortes").innerHTML=cs.map(c=>{
     const st=c.status||"agendado", stL={agendado:"Agendado",no_ar:"No ar",publicado:"Publicado"}[st]||st;
-    const tp=corteTipo(c);
-    const media=c.video?`<video playsinline preload="metadata" poster="${esc(c.poster||'')}"><source src="${esc(c.video)}#t=0.1"></video>`
-                       :(c.poster?`<img src="${esc(c.poster)}" alt="" style="width:100%;height:100%;object-fit:cover">`
-                       :(c.link?`<div class="thlink">📷 via Instagram<br><span>toque em gerenciar</span></div>`:`<div class="thlink">sem vídeo</div>`));
-    const play=c.video?`<button class="playbtn" onclick="playCorte(this)" aria-label="Tocar o corte">▶</button>`:"";
+    const tp=corteTipo(c), isLink=!!c.link;
+    const media=isLink
+      ? `<img src="${esc(posterOf(c))}" alt="" style="width:100%;height:100%;object-fit:cover" onerror="this.style.opacity=0">`
+      : (c.video?`<video playsinline preload="metadata" poster="${esc(c.poster||'')}"><source src="${esc(c.video)}#t=0.1"></video>`
+        :(c.poster?`<img src="${esc(c.poster)}" alt="" style="width:100%;height:100%;object-fit:cover">`:`<div class="thlink">sem vídeo</div>`));
+    const play=isLink
+      ? `<button class="playbtn" onclick="openPopup('org','${esc(c.id)}')" aria-label="Ver o reel">▶</button>`
+      : (c.video?`<button class="playbtn" onclick="playCorte(this)" aria-label="Tocar o corte">▶</button>`:"");
     const org=(tp!=="pago")?(c.sobe_em?("🟢 Orgânico: "+fmtBR(c.sobe_em)):"🟢 Orgânico: a definir"):"";
     const sep=(org&&tp==="ambos"&&c.pago_ini)?" · ":"";
     const pago=(tp!=="organico"&&c.pago_ini)?(sep+"🔵 Anúncio: "+fmtBR(c.pago_ini)+"–"+fmtBR(c.pago_fim)):"";
     const edit=EDIT?`<button class="cedit" onclick="openCorteAdmin('${esc(c.id)}')">⚙️ Gerenciar corte</button>`:"";
-    return `<div class="corte"><div class="thumb">${media}${play}<span class="wk">Semana ${esc(c.semana||"?")}</span>${c.link&&!c.video?'<span class="turbo" style="background:var(--blue)">🔗 link</span>':''}</div>
+    return `<div class="corte"><div class="thumb">${media}${play}<span class="wk">Semana ${esc(c.semana||"?")}</span>${isLink?'<span class="turbo" style="background:var(--blue)">🔗 Instagram</span>':''}</div>
       <div class="meta"><b>${esc(c.titulo||("Corte "+(c.semana||"")))}</b><span class="pill ${st}">${stL}</span>
       <div class="when">${org}${pago||(!org?'sem data':'')}</div>${edit}</div></div>`;
   }).join("") + (EDIT?`<div class="corte addcard" onclick="addCorte()"><div class="addinner"><span>➕</span>Adicionar corte</div></div>`:"");
