@@ -97,6 +97,14 @@
   .mvid{width:100%;border-radius:12px;margin:6px 0 12px;background:#000;max-height:60vh;aspect-ratio:9/16;object-fit:cover;display:block}
   .mbtn{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px;background:var(--red);color:#fff;font-weight:800;font-size:13px;padding:11px;border-radius:10px;text-decoration:none;border:0;width:100%;cursor:pointer}
   .mbtn.edit{background:#fff;color:var(--blue);border:1px dashed #b9c6d6}
+  /* aviso de salvamento automático */
+  .savest{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:60;display:none;align-items:center;gap:7px;
+    font-size:13px;font-weight:800;color:#fff;padding:9px 16px;border-radius:999px;box-shadow:0 10px 30px rgba(0,0,0,.28);transition:opacity .4s}
+  .savest.editando{background:#5b6b7d}
+  .savest.salvando{background:var(--blue)}
+  .savest.salvo{background:var(--ok)}
+  .savest.erro{background:#c0392b}
+  .autosave{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--org);font-weight:800}
   /* admin de cortes */
   .adm-inp{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:14px;margin:4px 0 2px;color:var(--ink)}
   .adm-nome{font-weight:800;color:var(--navy);font-size:16px}
@@ -301,6 +309,7 @@
   <div id="modal" class="modal" onclick="if(event.target===this)closePopup()">
     <div class="modalcard"><button class="mclose" onclick="closePopup()" aria-label="Fechar">✕</button><div id="modalBody"></div></div>
   </div>
+  <div id="saveStatus" class="savest"></div>
 
 <script>
 const PAINEL = {"schema": 1, "cliente": "Repasse Podcast", "convidado": {"slug": "dani", "nome": "Dani", "empresa": "", "cargo": "", "foto": "", "episodio": "", "gravado_em": "", "instagram": "https://www.instagram.com/eudanirepassefloripa/"}, "brand": {"navy": "#012D5A", "red": "#FE3231", "blue": "#01509D"}, "logo": "assets/logo.png", "episodio_youtube": "YBAcoHafd-k", "patrocinio": {"inicio": "2026-07-20", "fim": "2026-08-16", "total_posts": 4, "resumo": "5 cortes do seu episodio publicados aos poucos + 1 campanha de trafego pago levando pessoas ate o seu Instagram."}, "plano_intro": "Aqui voce acompanha, em tempo real, tudo o que a MediaGrowth esta fazendo com o seu episodio: quando cada corte sobe, o que ja publicou e como esta a campanha que leva o seu conteudo aos lojistas do nicho automotivo.", "plano": [{"icone": "🎬", "titulo": "5 cortes do episodio", "desc": "Os melhores momentos, publicados aos poucos nas redes do Repasse Podcast."}, {"icone": "🚀", "titulo": "Trafego pro seu Instagram", "desc": "Impulsionamento pago levando pessoas do publico certo ate o seu perfil."}, {"icone": "🔁", "titulo": "Troca semanal", "desc": "A cada domingo a campanha passa a impulsionar o proximo corte, dando fôlego novo a cada semana."}, {"icone": "📊", "titulo": "Numeros ao vivo", "desc": "Cliques, visitas ao perfil e alcance da campanha sempre atualizados nesta pagina."}], "cortes": [{"id": "01", "semana": 1, "titulo": "Corte 1", "turbinado": true, "status": "no_ar", "sobe_em": "2026-07-20", "video": "https://mediagrowth.com.br/cortes/repasse-dani/videos/dani-corte-01.mp4", "poster": "assets/poster-01.jpg", "link": "", "pago_ini": "2026-07-20", "pago_fim": "2026-07-26"}, {"id": "02", "semana": 2, "titulo": "Corte 2", "turbinado": false, "status": "agendado", "sobe_em": "2026-07-27", "video": "https://mediagrowth.com.br/cortes/repasse-dani/videos/dani-corte-02.mp4", "poster": "assets/poster-02.jpg", "link": "", "pago_ini": "2026-07-27", "pago_fim": "2026-08-02"}, {"id": "03", "semana": 3, "titulo": "Corte 3", "turbinado": false, "status": "agendado", "sobe_em": "2026-08-03", "video": "https://mediagrowth.com.br/cortes/repasse-dani/videos/dani-corte-03.mp4", "poster": "assets/poster-03.jpg", "link": "", "pago_ini": "2026-08-03", "pago_fim": "2026-08-09"}, {"id": "04", "semana": 4, "titulo": "Corte 4", "turbinado": false, "status": "agendado", "sobe_em": "2026-08-10", "video": "https://mediagrowth.com.br/cortes/repasse-dani/videos/dani-corte-04.mp4", "poster": "assets/poster-04.jpg", "link": "", "pago_ini": "2026-08-10", "pago_fim": "2026-08-16"}, {"id": "05", "semana": 5, "titulo": "Corte 5", "turbinado": false, "status": "agendado", "sobe_em": "2026-08-15", "video": "https://mediagrowth.com.br/cortes/repasse-dani/videos/dani-corte-05.mp4", "poster": "assets/poster-05.jpg", "link": ""}], "organicos": [], "notas": {"2026-07-26": "Troca do impulsionamento: Corte 1 -> Corte 2 (domingo)"}, "campanha": {"status": "ativa", "conta": "Repasse Podcast Ads", "account_id": "act_1275229611165039", "campaign_id": "120245479490130582", "campanha_nome": "20-07-26 - Reconhecimento - Reel Dani Repasse Floripa", "objetivo": "Levar pessoas do publico certo ate o Instagram do convidado (trafego / cliques no link)", "publico": "Lojistas e repassadores de veiculos (donos de loja de carro, do pequeno ao premium)", "regiao": "Grande Florianopolis / SC", "periodo": "", "gasto": null, "impressoes": null, "alcance": null, "link_clicks": null, "perfil": null, "views": null, "cliques": null, "ctr": null, "agenda": [], "anuncios": [{"nome": "Reel Dani Repasse Floripa", "ig": "https://www.instagram.com/p/DbBwq4ygIWN/"}]}, "atualizado_em": "2026-07-24"};
@@ -365,7 +374,7 @@ function renderEditbar(){
   if(!EDIT){ $("editbar").innerHTML=""; return; }
   $("editbar").innerHTML=`<div class="editbar"><span class="tag">modo edição</span>
     <button onclick="addNota()">+ nota</button>
-    <button onclick="pushState()">Salvar agora</button></div>`;
+    <span class="autosave">💾 salva automático</span></div>`;
 }
 
 /* ---- eventos por dia (cortes/organicos/impulsionamento) ---- */
@@ -732,15 +741,32 @@ function renderTL(){
 }
 
 /* ---- persistencia (so em modo edicao) ---- */
-function scheduleSave(){ if(!EDIT)return; clearTimeout(saveTimer); saveTimer=setTimeout(pushState,1200); }
+let _dirty=false, _statusTimer=null;
+function setSaveStatus(s){
+  const el=$("saveStatus"); if(!el) return; clearTimeout(_statusTimer);
+  const map={editando:['editando','✎ editando…'],salvando:['salvando','⏳ salvando…'],salvo:['salvo','✓ Conteúdo salvo'],erro:['erro','⚠️ salvando de novo…']};
+  if(!map[s]){ el.style.display='none'; return; }
+  el.className='savest '+map[s][0]; el.textContent=map[s][1]; el.style.display='flex'; el.style.opacity='1';
+  if(s==='salvo') _statusTimer=setTimeout(()=>{ el.style.opacity='0'; setTimeout(()=>{ if(el.style.opacity==='0') el.style.display='none'; },450); }, 2200);
+}
+function scheduleSave(){ if(!EDIT)return; _dirty=true; setSaveStatus('editando'); clearTimeout(saveTimer); saveTimer=setTimeout(pushState,700); }
 async function pushState(){
-  if(!EDIT||!API_BASE||API_BASE.indexOf("__")===0) return;
+  if(!EDIT||!TOKEN||!API_BASE||API_BASE.indexOf("__")===0) return;
+  clearTimeout(saveTimer);
   D.atualizado_em=new Date().toISOString().slice(0,10);
+  setSaveStatus('salvando');
   try{
     const body=new URLSearchParams({action:"set",slug:(D.convidado||{}).slug||"",token:TOKEN,painel:JSON.stringify(D)});
-    const r=await fetch(API_BASE,{method:"POST",body}); await r.json();
-  }catch(e){}
+    const r=await fetch(API_BASE,{method:"POST",body}); const j=await r.json();
+    if(j&&j.ok){ _dirty=false; setSaveStatus('salvo'); } else { setSaveStatus('erro'); setTimeout(pushState,3000); }
+  }catch(e){ setSaveStatus('erro'); setTimeout(pushState,3000); }
 }
+function flushSave(){
+  if(!EDIT||!TOKEN||!_dirty||!API_BASE||API_BASE.indexOf("__")===0) return;
+  try{ const fd=new FormData(); fd.append('action','set'); fd.append('slug',(D.convidado||{}).slug||''); fd.append('token',TOKEN); fd.append('painel',JSON.stringify(D)); navigator.sendBeacon(API_BASE, fd); _dirty=false; }catch(e){}
+}
+window.addEventListener('beforeunload', flushSave);
+document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='hidden') flushSave(); });
 async function live(){
   if(EDIT||!API_BASE||API_BASE.indexOf("__")===0) return;   // em edicao nao sobrescreve o que voce mexe
   try{
