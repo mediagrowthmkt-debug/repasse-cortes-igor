@@ -352,15 +352,24 @@ function render(){
   const cs=D.cortes||[];
   const nowd=new Date(); nowd.setHours(0,0,0,0);
   const total=pt.total_posts||cs.length||4;
-  // "turbinados no ar" = anúncios cujo INÍCIO já chegou (segue o cronograma real; mover p/ frente reduz a barra)
-  const feitos=cs.filter(c=> (c.pago_ini && dpar(c.pago_ini)<=nowd) || c.status==="publicado").length;
-  const done=Math.min(feitos,total);
-  const pct=total?Math.round(done/total*100):0;
+  // Barra = impulsionamentos CONCLUÍDOS (cada anúncio vale 1/total; enquanto roda conta a fração dos dias já rodados)
+  // hoje = 1º impulsionamento começando -> ~0%; 100% só quando todos terminarem
+  let prog=0, concluidos=0, noar=0;
+  cs.forEach(c=>{
+    if(!(c.pago_ini && c.pago_fim)) return;               // só conta os turbinados (pagos)
+    const ini=dpar(c.pago_ini), fim=dpar(c.pago_fim);
+    if(nowd>fim){ prog+=1; concluidos++; }                 // impulsionamento concluído
+    else if(nowd>=ini){ const td=Math.max(1,(fim-ini)/864e5+1), dd=Math.max(0,(nowd-ini)/864e5); prog+=Math.min(1,dd/td); noar++; } // rodando -> fração
+  });
+  let pct=Math.max(0,Math.min(100,Math.round(prog/total*100)));
+  if(noar>0 && pct<2) pct=2;   // fiozinho visível quando há impulsionamento no ar
   $("progFill").style.width=pct+"%";
-  if(pt.inicio && dpar(pt.inicio)>nowd){
+  if(pt.inicio && dpar(pt.inicio)>nowd && !noar && !concluidos){
     $("progLbl").textContent="Começa em "+fmtBR(pt.inicio);
+  } else if(concluidos>=total){
+    $("progLbl").textContent="Divulgação concluída";
   } else {
-    $("progLbl").textContent = done>=total ? "Divulgação concluída" : (done+" de "+total+" turbinados no ar");
+    $("progLbl").textContent = `${concluidos} de ${total} impulsionamentos concluídos${noar?` · ${noar} no ar`:""}`;
   }
   $("progRange").textContent=(pt.inicio&&pt.fim)?(fmtBR(pt.inicio)+" – "+fmtBR(pt.fim)):"a definir";
   $("planoIntro").innerHTML=(D.plano_intro?"<p>"+esc(D.plano_intro)+"</p>":"");
