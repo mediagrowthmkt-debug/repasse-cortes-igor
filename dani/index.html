@@ -570,6 +570,17 @@ function openPopup(kind,cid){
   body.innerHTML=`${tag}<h3>${esc(corteTit(c))}</h3>${media}${info}`; box.style.display="flex"; igProcess();
 }
 function closePopup(){ const b=$("modal"); if(b) b.style.display="none"; const v=document.querySelector('#modalBody video'); if(v){try{v.pause();}catch(e){}} }
+function openReel(cid){ const c=(D.cortes||[]).find(x=>x.id===cid); if(!c)return; const b=$("modalBody"); if(!b)return; b.innerHTML=`<div class="mtag" style="background:var(--navy)">${esc(corteTit(c))}</div>${corteMediaHTML(c)}`; $("modal").style.display="flex"; igProcess(); }
+async function backfillPosters(){
+  if(!EDIT || !TOKEN) return; let changed=false;
+  for(const c of (D.cortes||[])){
+    if(c.link && (!c.poster || /instagram\.com/i.test(c.poster))){
+      try{ const fd=new FormData(); fd.append('action','igthumb'); fd.append('slug',(D.convidado||{}).slug||''); fd.append('token',TOKEN); fd.append('link',c.link);
+        const r=await fetch(API_BASE,{method:'POST',body:fd}); const j=await r.json(); if(j&&j.url){ c.poster=j.url; changed=true; } }catch(e){}
+    }
+  }
+  if(changed){ scheduleSave(); renderCal(); renderCortes(); }
+}
 function addNota(){ const day=prompt("Data da nota (AAAA-MM-DD):"); if(!day)return; editNota(day); }
 function editNota(day){ const cur=(D.notas||{})[day]||""; const v=prompt("Nota / tag para "+day+":",cur); if(v===null)return; D.notas=D.notas||{}; if(v.trim()==="") delete D.notas[day]; else D.notas[day]=v.trim(); renderCal(); scheduleSave(); }
 function cellClick(ev,day){ if(ev.target && (ev.target.classList.contains('chip')||ev.target.classList.contains('note'))) return; editNota(day); }
@@ -594,7 +605,7 @@ function renderCortes(){
       : (c.video?`<video playsinline preload="metadata" poster="${esc(c.poster||'')}"><source src="${esc(c.video)}#t=0.1"></video>`
         :(c.poster?`<img src="${esc(c.poster)}" alt="" style="width:100%;height:100%;object-fit:cover">`:`<div class="thlink">sem vídeo</div>`));
     const play=isLink
-      ? `<button class="playbtn" onclick="openPopup('org','${esc(c.id)}')" aria-label="Ver o reel">▶</button>`
+      ? `<button class="playbtn" onclick="openReel('${esc(c.id)}')" aria-label="Ver o reel">▶</button>`
       : (c.video?`<button class="playbtn" onclick="playCorte(this)" aria-label="Tocar o corte">▶</button>`:"");
     const org=(tp!=="pago")?(c.sobe_em?("🟢 Orgânico: "+fmtBR(c.sobe_em)):"🟢 Orgânico: a definir"):"";
     const sep=(org&&tp==="ambos"&&c.pago_ini)?" · ":"";
@@ -739,6 +750,7 @@ async function live(){
   }catch(e){}
 }
 render(); live(); setInterval(live,30000);
+if(EDIT && TOKEN) setTimeout(backfillPosters, 2600);
 </script>
 </body>
 </html>
