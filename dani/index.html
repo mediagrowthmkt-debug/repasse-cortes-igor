@@ -97,6 +97,39 @@
   .mvid{width:100%;border-radius:12px;margin:6px 0 12px;background:#000;max-height:60vh;aspect-ratio:9/16;object-fit:cover;display:block}
   .mbtn{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px;background:var(--red);color:#fff;font-weight:800;font-size:13px;padding:11px;border-radius:10px;text-decoration:none;border:0;width:100%;cursor:pointer}
   .mbtn.edit{background:#fff;color:var(--blue);border:1px dashed #b9c6d6}
+  /* admin de cortes */
+  .adm-inp{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:14px;margin:4px 0 2px;color:var(--ink)}
+  .adm-nome{font-weight:800;color:var(--navy);font-size:16px}
+  .adm-lbl{font-size:12px;font-weight:800;color:var(--navy);margin:14px 0 4px}
+  .adm-sel{font-size:13px;color:#28425f;background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:9px 12px;margin:8px 0}
+  .seg{display:flex;gap:6px;margin:4px 0}
+  .seg button{flex:1;border:1.5px solid var(--line);background:#fff;color:#5b6b7d;font-weight:800;font-size:12.5px;padding:9px 6px;border-radius:10px;cursor:pointer}
+  .seg button.on{border-color:var(--navy);background:var(--navy);color:#fff}
+  .seg.sm button{font-size:11.5px;padding:7px 6px}
+  .pk{border:1px solid var(--line);border-radius:12px;padding:10px;margin:6px 0 4px}
+  .pkhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+  .pkhead b{font-size:14px;color:var(--navy);text-transform:capitalize}
+  .pkhead button{border:1px solid var(--line);background:#fff;width:30px;height:30px;border-radius:8px;font-size:18px;font-weight:800;color:var(--navy);cursor:pointer;line-height:1}
+  .pkgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px}
+  .pkdow{font-size:9px;font-weight:700;color:var(--muted);text-align:center;padding:2px 0}
+  .pkday{aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;font-size:12px;border-radius:8px;cursor:pointer;color:#334;background:#f6f9fc;user-select:none}
+  .pkday:hover{background:#e6eef7}
+  .pkday.out{background:transparent;cursor:default}
+  .pkday.sel.org{background:var(--org);color:#fff;font-weight:800}
+  .pkday.sel.pago{background:#cfe0f5;color:var(--navy);font-weight:700}
+  .pkday.sel.pago.rs{background:var(--blue);color:#fff;border-radius:8px 3px 3px 8px}
+  .pkday.sel.pago.re{background:var(--blue);color:#fff;border-radius:3px 8px 8px 3px}
+  .pkday.sel.pago.rs.re{border-radius:8px}
+  .pkhint{font-size:11.5px;color:var(--muted);text-align:center;margin-top:8px}
+  .adm-actions{display:flex;gap:8px;align-items:center;margin-top:12px}
+  .adm-actions .mbtn{margin-top:0;flex:1}
+  .adm-del{border:0;background:none;color:#c0392b;font-weight:700;font-size:12.5px;cursor:pointer;padding:8px}
+  .thlink{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#8fa3b8;font-size:12px;font-weight:700;text-align:center;gap:2px;background:#0a1e33}
+  .thlink span{font-size:10px;font-weight:600;opacity:.8}
+  .corte.addcard{border:2px dashed #b9c6d6;background:#fbfdff;display:flex;align-items:center;justify-content:center;cursor:pointer;min-height:150px}
+  .corte.addcard:hover{background:var(--soft);border-color:var(--blue)}
+  .corte.addcard .addinner{color:var(--blue);font-weight:800;font-size:14px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px}
+  .corte.addcard .addinner span{font-size:28px}
   .note{display:block;margin-top:3px;font-size:9.6px;color:#6a4a00;background:#fff6df;border:1px solid #ffe6a6;border-radius:5px;padding:2px 5px;line-height:1.3;white-space:normal;cursor:pointer}
   .addnote{display:block;margin-top:3px;font-size:9.4px;color:#9aa7b5;opacity:0;transition:opacity .15s}
   .day:hover .addnote{opacity:1}
@@ -419,12 +452,83 @@ function wireCalDrag(){
     applyMove(p.kind, p.cid, t.dataset.day);
   });
 }
+/* ===== Admin de cortes: tipo (organico/pago/ambos) + date-picker (clicar/arrastar, sem digitar) ===== */
+let admin=null;
+function nextCorteId(){ const ids=(D.cortes||[]).map(c=>parseInt(c.id,10)||0); return String((ids.length?Math.max(...ids):0)+1).padStart(2,"0"); }
+function pickerDefaultMonth(c){ const base=(c&&(c.sobe_em||c.pago_ini))||(D.patrocinio||{}).inicio; const d=dpar(base)||new Date(); return {y:d.getFullYear(), m:d.getMonth()}; }
+function corteTipo(c){ return c.tipo || (c.pago_ini&&c.sobe_em?"ambos":(c.pago_ini?"pago":"organico")); }
+function openCorteAdmin(cid){ const c=(D.cortes||[]).find(x=>x.id===cid); if(!c)return; const tp=corteTipo(c); admin={cid, tipo:tp, mode:(tp==="pago"?"pago":"org"), month:pickerDefaultMonth(c), rangeStart:null}; renderCorteAdmin(); }
+function addCorte(){ if(!EDIT)return; const id=nextCorteId(); const sem=(D.cortes||[]).length+1; D.cortes=D.cortes||[]; D.cortes.push({id, semana:sem, titulo:"Corte "+sem, status:"agendado", tipo:"organico"}); scheduleSave(); admin={cid:id, tipo:"organico", mode:"org", month:pickerDefaultMonth(), rangeStart:null}; renderCorteAdmin(); }
+function amode(){ return admin.tipo==="ambos"?admin.mode:(admin.tipo==="pago"?"pago":"org"); }
+function pickerGrid(c){
+  const y=admin.month.y, m=admin.month.m, mode=amode();
+  let h=`<div class="pk"><div class="pkhead"><button type="button" onclick="adminNav(-1)">‹</button><b>${MESES[m]} de ${y}</b><button type="button" onclick="adminNav(1)">›</button></div><div class="pkgrid">`;
+  DOW.forEach(d=>h+=`<div class="pkdow">${d}</div>`);
+  const first=new Date(y,m,1).getDay(), dim=new Date(y,m+1,0).getDate();
+  for(let i=0;i<first;i++) h+=`<div class="pkday out"></div>`;
+  for(let d=1;d<=dim;d++){
+    const key=isoOf(new Date(y,m,d)); let cls="";
+    if(mode==="org"){ if(c.sobe_em===key) cls="sel org"; }
+    else { if(c.pago_ini&&c.pago_fim){ const dd=dpar(key); if(dd>=dpar(c.pago_ini)&&dd<=dpar(c.pago_fim)) cls="sel pago"; if(key===c.pago_ini) cls+=" rs"; if(key===c.pago_fim) cls+=" re"; } if(admin.rangeStart===key) cls="sel pago rs re"; }
+    h+=`<div class="pkday ${cls}" onclick="adminPick('${key}')">${d}</div>`;
+  }
+  h+=`</div><div class="pkhint">${mode==="org"?"Toque no dia da publicação orgânica":(admin.rangeStart?"Agora toque no ÚLTIMO dia do anúncio":"Toque no 1º dia do anúncio, depois no último")}</div></div>`;
+  return h;
+}
+function renderCorteAdmin(){
+  const c=(D.cortes||[]).find(x=>x.id===admin.cid); const body=$("modalBody"); if(!c||!body){ closePopup(); return; }
+  const media=c.video?`<video class="mvid" playsinline controls poster="${esc(c.poster||'')}"><source src="${esc(c.video)}"></video>`
+              :(c.link?`<blockquote class="instagram-media" data-instgrm-permalink="${esc(c.link.endsWith('/')?c.link:c.link+'/')}" data-instgrm-version="14" style="margin:0;width:100%;min-width:0;border:0"></blockquote>`
+              :(c.poster?`<img class="mvid" src="${esc(c.poster)}">`:`<div class="mvid" style="display:flex;align-items:center;justify-content:center;color:#7d93a8;font-size:13px">Envie um vídeo ou cole um link do Instagram</div>`));
+  const t=admin.tipo;
+  let h=`<div class="mtag" style="background:var(--navy)">⚙️ Gerenciar corte</div>
+    <input class="adm-inp adm-nome" value="${esc(c.titulo||('Corte '+(c.semana||'')))}" oninput="adminNome(this.value)" placeholder="Nome do corte">
+    ${media}
+    <div class="adm-lbl">Este corte vai para:</div>
+    <div class="seg"><button type="button" class="${t==='organico'?'on':''}" onclick="adminTipo('organico')">🟢 Orgânico</button>
+      <button type="button" class="${t==='pago'?'on':''}" onclick="adminTipo('pago')">🔵 Pago</button>
+      <button type="button" class="${t==='ambos'?'on':''}" onclick="adminTipo('ambos')">🟢🔵 Ambos</button></div>`;
+  if(t==="ambos"){ h+=`<div class="seg sm"><button type="button" class="${admin.mode==='org'?'on':''}" onclick="adminMode('org')">Escolher dia orgânico</button>
+      <button type="button" class="${admin.mode==='pago'?'on':''}" onclick="adminMode('pago')">Escolher período do anúncio</button></div>`; }
+  h+=`<div class="adm-sel">${(t!=='pago'&&c.sobe_em)?`🟢 Orgânico: <b>${fmtBR(c.sobe_em)}</b>`:''}${(t!=='pago'&&c.sobe_em&&t!=='organico'&&c.pago_ini)?' &nbsp;·&nbsp; ':''}${(t!=='organico'&&c.pago_ini)?`🔵 Anúncio: <b>${fmtBR(c.pago_ini)} a ${fmtBR(c.pago_fim)}</b>`:''}${(!c.sobe_em&&!c.pago_ini)?'<span style="color:#7d93a8">selecione as datas no calendário abaixo</span>':''}</div>`;
+  h+=pickerGrid(c);
+  h+=`<div class="adm-lbl">🔗 Link do Reel no Instagram (opcional — "upload por link")</div>
+    <input class="adm-inp" value="${esc(c.link||'')}" oninput="adminLink(this.value)" placeholder="https://www.instagram.com/reel/...">
+    <label class="mbtn edit" style="cursor:pointer">🎬 ${c.video?'Trocar':'Enviar'} vídeo do corte<input type="file" accept="video/*,.mov,.mp4" style="display:none" onchange="adminVideo(this)"></label>
+    <div class="adm-actions"><button type="button" class="mbtn" onclick="adminDone()">✔️ Concluir</button>
+      <button type="button" class="adm-del" onclick="adminDel()">🗑️ Excluir corte</button></div>`;
+  body.innerHTML=h; $("modal").style.display="flex"; igProcess();
+}
+function adminTipo(t){ const c=(D.cortes||[]).find(x=>x.id===admin.cid); if(!c)return; admin.tipo=t; c.tipo=t; admin.rangeStart=null;
+  if(t==="organico"){ delete c.pago_ini; delete c.pago_fim; admin.mode="org"; }
+  else if(t==="pago"){ delete c.sobe_em; admin.mode="pago"; }
+  else { admin.mode="org"; }
+  renderCorteAdmin(); renderCal(); renderCortes(); renderTL(); scheduleSave(); }
+function adminMode(m){ admin.mode=m; admin.rangeStart=null; renderCorteAdmin(); }
+function adminNav(delta){ let m=admin.month.m+delta, y=admin.month.y; if(m<0){m=11;y--;} if(m>11){m=0;y++;} admin.month={y,m}; renderCorteAdmin(); }
+function adminPick(key){ const c=(D.cortes||[]).find(x=>x.id===admin.cid); if(!c)return; const mode=amode();
+  if(mode==="org"){ c.sobe_em=key; }
+  else { if(!admin.rangeStart){ admin.rangeStart=key; } else { const a=admin.rangeStart<=key?admin.rangeStart:key, b=admin.rangeStart<=key?key:admin.rangeStart; c.pago_ini=a; c.pago_fim=b; admin.rangeStart=null; } }
+  renderCorteAdmin(); renderCal(); renderCortes(); renderTL(); scheduleSave(); }
+function adminNome(v){ const c=(D.cortes||[]).find(x=>x.id===admin.cid); if(c){ c.titulo=v; scheduleSave(); } }
+function adminLink(v){ const c=(D.cortes||[]).find(x=>x.id===admin.cid); if(c){ c.link=v.trim(); scheduleSave(); } }
+async function adminVideo(inp){ const f=inp.files&&inp.files[0]; if(!f)return; if(!TOKEN){ alert('Abra com o link de edição (com token) para enviar arquivos.'); return; }
+  const c=(D.cortes||[]).find(x=>x.id===admin.cid); if(!c)return; const lab=inp.parentElement, txt=lab.childNodes[0]; const old=txt?txt.nodeValue:'';
+  if(txt) txt.nodeValue='enviando…';
+  try{ const url=await uploadFile(f,'video'); if(!url){alert('Falha no upload.');return;} c.video=url; c.link=c.link||'';
+    try{ const blob=await capturePosterFromFile(f); if(blob){ const purl=await uploadFile(blob,'poster'); if(purl) c.poster=purl; } }catch(e){}
+    scheduleSave(); renderCorteAdmin(); renderCal(); renderCortes(); alert('Vídeo enviado!');
+  }catch(e){ alert('Erro: '+(e.message||e)); } finally{ if(txt) txt.nodeValue=old; } }
+function adminDel(){ const c=(D.cortes||[]).find(x=>x.id===admin.cid); if(!c)return; if(!confirm('Excluir '+(c.titulo||'este corte')+'?'))return; D.cortes=(D.cortes||[]).filter(x=>x.id!==admin.cid); closePopup(); renderCal(); renderCortes(); renderTL(); scheduleSave(); }
+function adminDone(){ closePopup(); renderCal(); renderCortes(); renderTL(); scheduleSave(); }
+
 function openPopup(kind,cid){
   const c=(D.cortes||[]).find(x=>x.id===cid); if(!c)return;
+  if(EDIT){ openCorteAdmin(cid); return; }   // no modo edição, clicar abre o gerenciador
   const box=$("modal"), body=$("modalBody"); if(!box||!body)return;
-  const prof=igProfile(), handle=igHandle();
-  const media=c.video?`<video class="mvid" playsinline controls poster="${esc(c.poster||'')}"><source src="${esc(c.video)}"></video>`:(c.poster?`<img class="mvid" src="${esc(c.poster)}">`:"");
-  const dest=c.link||prof, verlbl=c.link?"📲 Ver este corte no Instagram":("📲 Ver no Instagram "+handle);
+  const media=c.video?`<video class="mvid" playsinline controls poster="${esc(c.poster||'')}"><source src="${esc(c.video)}"></video>`
+              :(c.link?`<blockquote class="instagram-media" data-instgrm-permalink="${esc(c.link.endsWith('/')?c.link:c.link+'/')}" data-instgrm-version="14" style="margin:0;width:100%;min-width:0;border:0"></blockquote>`
+              :(c.poster?`<img class="mvid" src="${esc(c.poster)}">`:""));
   const stL={agendado:"Agendado",no_ar:"No ar",publicado:"Publicado"}[c.status||"agendado"];
   let tag, info;
   if(kind==="pago"){
@@ -438,11 +542,7 @@ function openPopup(kind,cid){
     tag=`<div class="mtag" style="background:var(--org)">Corte · publicação orgânica</div>`;
     info=`<p>🟢 <b>Sobe (orgânico):</b> ${c.sobe_em?fmtBR(c.sobe_em):"a definir"}<br>📌 <b>Status:</b> ${stL}${c.pago_ini?`<br>🔵 <b>Impulsionado:</b> ${fmtBR(c.pago_ini)} a ${fmtBR(c.pago_fim)}`:""}</p>`;
   }
-  let h=`${tag}<h3>${esc(corteTit(c))}</h3>${media}${info}${dest?`<a class="mbtn" href="${esc(dest)}" target="_blank" rel="noopener">${verlbl}</a>`:""}`;
-  if(EDIT){ h+=`<button class="mbtn edit" onclick="closePopup();editCorte('${esc(cid)}')">✏️ editar corte (datas · anúncio · link)</button>
-    <label class="mbtn edit" style="cursor:pointer">🎬 Trocar vídeo<input type="file" accept="video/*,.mov,.mp4" style="display:none" onchange="trocarMidia(this,'${esc(cid)}','video')"></label>
-    <label class="mbtn edit" style="cursor:pointer">📷 Trocar capa<input type="file" accept="image/*" style="display:none" onchange="trocarMidia(this,'${esc(cid)}','poster')"></label>`; }
-  body.innerHTML=h; box.style.display="flex";
+  body.innerHTML=`${tag}<h3>${esc(corteTit(c))}</h3>${media}${info}`; box.style.display="flex"; igProcess();
 }
 function closePopup(){ const b=$("modal"); if(b) b.style.display="none"; const v=document.querySelector('#modalBody video'); if(v){try{v.pause();}catch(e){}} }
 function addNota(){ const day=prompt("Data da nota (AAAA-MM-DD):"); if(!day)return; editNota(day); }
@@ -463,16 +563,19 @@ function renderCortes(){
   }
   $("cortes").innerHTML=cs.map(c=>{
     const st=c.status||"agendado", stL={agendado:"Agendado",no_ar:"No ar",publicado:"Publicado"}[st]||st;
+    const tp=corteTipo(c);
     const media=c.video?`<video playsinline preload="metadata" poster="${esc(c.poster||'')}"><source src="${esc(c.video)}#t=0.1"></video>`
-                       :(c.poster?`<img src="${esc(c.poster)}" alt="" style="width:100%;height:100%;object-fit:cover">`:"");
+                       :(c.poster?`<img src="${esc(c.poster)}" alt="" style="width:100%;height:100%;object-fit:cover">`
+                       :(c.link?`<div class="thlink">📷 via Instagram<br><span>toque em gerenciar</span></div>`:`<div class="thlink">sem vídeo</div>`));
     const play=c.video?`<button class="playbtn" onclick="playCorte(this)" aria-label="Tocar o corte">▶</button>`:"";
-    const org=c.sobe_em?("🟢 Orgânico: "+fmtBR(c.sobe_em)):"🟢 Orgânico: a definir";
-    const pago=c.pago_ini?(" · 🔵 Anúncio: "+fmtBR(c.pago_ini)+"–"+fmtBR(c.pago_fim)):"";
-    const edit=EDIT?`<button class="cedit" onclick="editCorte('${esc(c.id)}')">✏️ editar (orgânico · anúncio · link)</button><button class="cedit" onclick="openPopup('org','${esc(c.id)}')">🎬 trocar vídeo/capa</button>`:"";
-    return `<div class="corte"><div class="thumb">${media}${play}<span class="wk">Semana ${esc(c.semana||"?")}</span>${c.turbinado?'<span class="turbo">🚀 turbinado</span>':''}</div>
+    const org=(tp!=="pago")?(c.sobe_em?("🟢 Orgânico: "+fmtBR(c.sobe_em)):"🟢 Orgânico: a definir"):"";
+    const sep=(org&&tp==="ambos"&&c.pago_ini)?" · ":"";
+    const pago=(tp!=="organico"&&c.pago_ini)?(sep+"🔵 Anúncio: "+fmtBR(c.pago_ini)+"–"+fmtBR(c.pago_fim)):"";
+    const edit=EDIT?`<button class="cedit" onclick="openCorteAdmin('${esc(c.id)}')">⚙️ Gerenciar corte</button>`:"";
+    return `<div class="corte"><div class="thumb">${media}${play}<span class="wk">Semana ${esc(c.semana||"?")}</span>${c.link&&!c.video?'<span class="turbo" style="background:var(--blue)">🔗 link</span>':''}</div>
       <div class="meta"><b>${esc(c.titulo||("Corte "+(c.semana||"")))}</b><span class="pill ${st}">${stL}</span>
-      <div class="when">${org}${pago}</div>${edit}</div></div>`;
-  }).join("");
+      <div class="when">${org}${pago||(!org?'sem data':'')}</div>${edit}</div></div>`;
+  }).join("") + (EDIT?`<div class="corte addcard" onclick="addCorte()"><div class="addinner"><span>➕</span>Adicionar corte</div></div>`:"");
 }
 function playCorte(btn){ const box=btn.closest('.corte'); const v=box&&box.querySelector('video'); if(!v)return; v.setAttribute('controls','controls'); v.muted=false; box.classList.add('playing'); const p=v.play&&v.play(); if(p&&p.catch)p.catch(()=>{ v.muted=true; v.play(); }); }
 function editCorte(id){
