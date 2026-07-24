@@ -562,7 +562,8 @@ async function adminVideo(inp){ const f=inp.files&&inp.files[0]; if(!f)return; i
   if(txt) txt.nodeValue='enviando…';
   try{ const url=await uploadFile(f,'video'); if(!url){alert('Falha no upload.');return;} c.video=url; delete c.link;   // vídeo enviado assume no lugar do link
     try{ const blob=await capturePosterFromFile(f); if(blob){ const purl=await uploadFile(blob,'poster'); if(purl) c.poster=purl; } }catch(e){}
-    scheduleSave(); renderCorteAdmin(); renderCal(); renderCortes(); alert('Vídeo enviado! Já aparece na grade e no calendário.');
+    scheduleSave(); renderCorteAdmin(); renderCal(); renderCortes();
+    alert('Vídeo enviado! Já aparece na grade e no calendário.' + (f.size>10*1024*1024 ? '\n\nComo é um vídeo pesado, ele será otimizado automaticamente (fica leve e rápido) nos próximos minutos.' : ''));
   }catch(e){ alert('Erro: '+(e.message||e)); } finally{ if(txt) txt.nodeValue=old; } }
 function adminDel(){ const c=(D.cortes||[]).find(x=>x.id===admin.cid); if(!c)return; if(!confirm('Excluir '+(c.titulo||'este corte')+'?'))return; D.cortes=(D.cortes||[]).filter(x=>x.id!==admin.cid); closePopup(); renderCal(); renderCortes(); renderTL(); scheduleSave(); }
 function adminDone(){ closePopup(); renderCal(); renderCortes(); renderTL(); scheduleSave(); }
