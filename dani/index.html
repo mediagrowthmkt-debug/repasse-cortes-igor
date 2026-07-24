@@ -483,25 +483,23 @@ function pickerDefaultMonth(c){ const base=(c&&(c.sobe_em||c.pago_ini))||(D.patr
 function corteTipo(c){ return c.tipo || (c.pago_ini&&c.sobe_em?"ambos":(c.pago_ini?"pago":"organico")); }
 function igShortcode(link){ const m=String(link||"").match(/instagram\.com\/(?:p|reel|reels|tv)\/([^\/?#]+)/i); return m?m[1]:""; }
 function igThumb(link){ const s=igShortcode(link); return s?("https://www.instagram.com/p/"+s+"/media/?size=l"):""; }
-function posterOf(c){ if(c.poster && !/instagram\.com/i.test(c.poster)) return c.poster; if(c.link) return igThumb(c.link); return c.poster||""; }
+function posterOf(c){
+  if(c.poster && !/instagram\.com/i.test(c.poster)) return c.poster;   // capa hospedada (upload de vídeo)
+  if(c.link){ const s=igShortcode(c.link); if(s && API_BASE && API_BASE.indexOf("__")!==0) return API_BASE+"?action=igimg&slug="+encodeURIComponent((D.convidado||{}).slug||"")+"&link="+encodeURIComponent(c.link); return igThumb(c.link); }
+  return c.poster||"";
+}
 function corteMediaHTML(c){
   if(c.link){ const u=c.link.endsWith('/')?c.link:c.link+'/'; return `<blockquote class="instagram-media" data-instgrm-permalink="${esc(u)}" data-instgrm-version="14" style="margin:0;width:100%;min-width:0;border:0"></blockquote>`; }
   if(c.video) return `<video class="mvid" playsinline controls poster="${esc(c.poster||'')}"><source src="${esc(c.video)}"></video>`;
   if(c.poster) return `<img class="mvid" src="${esc(c.poster)}">`;
   return `<div class="mvid" style="display:flex;align-items:center;justify-content:center;color:#7d93a8;font-size:13px;text-align:center;padding:10px">Envie um vídeo ou cole um link do Instagram e toque em "Usar este link"</div>`;
 }
-async function adminUseLink(){
+function adminUseLink(){
   const c=(D.cortes||[]).find(x=>x.id===admin.cid); if(!c)return;
   const inp=document.querySelector('#modalBody input[data-adm="link"]'); const v=(inp?inp.value:(c.link||'')).trim();
   if(!/instagram\.com\//i.test(v)){ alert('Cole um link válido do Instagram (reel ou post).'); return; }
-  c.link=v; delete c.poster;   // link assume: limpa a capa do vídeo antigo
+  c.link=v; delete c.poster;   // link assume; a capa vem do proxy (rápida e cacheada)
   scheduleSave(); renderCorteAdmin(); renderCal(); renderCortes();
-  // baixa a capa do reel pelo backend (o Instagram bloqueia a imagem chamada direto do navegador)
-  if(TOKEN){ try{
-    const fd=new FormData(); fd.append('action','igthumb'); fd.append('slug',(D.convidado||{}).slug||''); fd.append('token',TOKEN); fd.append('link',v);
-    const r=await fetch(API_BASE,{method:'POST',body:fd}); const j=await r.json();
-    if(j&&j.url){ c.poster=j.url; scheduleSave(); renderCorteAdmin(); renderCal(); renderCortes(); }
-  }catch(e){} }
 }
 function openCorteAdmin(cid){ const c=(D.cortes||[]).find(x=>x.id===cid); if(!c)return; const tp=corteTipo(c); admin={cid, tipo:tp, mode:(tp==="pago"?"pago":"org"), month:pickerDefaultMonth(c), rangeStart:null}; renderCorteAdmin(); }
 function addCorte(){ if(!EDIT)return; const id=nextCorteId(); const sem=(D.cortes||[]).length+1; D.cortes=D.cortes||[]; D.cortes.push({id, semana:sem, titulo:"Corte "+sem, status:"agendado", tipo:"organico"}); scheduleSave(); admin={cid:id, tipo:"organico", mode:"org", month:pickerDefaultMonth(), rangeStart:null}; renderCorteAdmin(); }
@@ -792,8 +790,7 @@ async function initLoad(){
     try{ const r=await fetch(API_BASE+"?action=get&slug="+encodeURIComponent((D.convidado||{}).slug||""),{cache:"no-store"}); const s=await r.json(); if(s && s.painel){ D=Object.assign({},D,s.painel); } }catch(e){}
   }
   render();
-  if(EDIT){ if(TOKEN) setTimeout(backfillPosters,2000); }   // no modo edição NÃO auto-atualiza (não atropela sua edição)
-  else { setInterval(live,30000); }                          // no modo cliente, atualiza sozinho
+  if(!EDIT){ setInterval(live,30000); }                      // no modo cliente atualiza sozinho; no modo edição NÃO (não atropela a edição)
 }
 render(); initLoad();
 </script>
