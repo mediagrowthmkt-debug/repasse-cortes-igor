@@ -101,6 +101,10 @@
   .adm-inp{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:14px;margin:4px 0 2px;color:var(--ink)}
   .adm-nome{font-weight:800;color:var(--navy);font-size:16px}
   .adm-lbl{font-size:12px;font-weight:800;color:var(--navy);margin:14px 0 4px}
+  .adm-linkrow{display:flex;gap:6px;align-items:stretch}
+  .adm-linkrow .adm-inp{margin:4px 0}
+  .adm-uselink{flex:none;border:0;background:var(--blue);color:#fff;font-weight:800;font-size:13px;padding:0 16px;border-radius:10px;cursor:pointer;margin:4px 0}
+  .adm-clearlink{border:0;background:none;color:#c0392b;font-size:12px;font-weight:700;cursor:pointer;padding:2px 0}
   .adm-sel{font-size:13px;color:#28425f;background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:9px 12px;margin:8px 0}
   .seg{display:flex;gap:6px;margin:4px 0}
   .seg button{flex:1;border:1.5px solid var(--line);background:#fff;color:#5b6b7d;font-weight:800;font-size:12.5px;padding:9px 6px;border-radius:10px;cursor:pointer}
@@ -457,6 +461,18 @@ let admin=null;
 function nextCorteId(){ const ids=(D.cortes||[]).map(c=>parseInt(c.id,10)||0); return String((ids.length?Math.max(...ids):0)+1).padStart(2,"0"); }
 function pickerDefaultMonth(c){ const base=(c&&(c.sobe_em||c.pago_ini))||(D.patrocinio||{}).inicio; const d=dpar(base)||new Date(); return {y:d.getFullYear(), m:d.getMonth()}; }
 function corteTipo(c){ return c.tipo || (c.pago_ini&&c.sobe_em?"ambos":(c.pago_ini?"pago":"organico")); }
+function corteMediaHTML(c){
+  if(c.link){ const u=c.link.endsWith('/')?c.link:c.link+'/'; return `<blockquote class="instagram-media" data-instgrm-permalink="${esc(u)}" data-instgrm-version="14" style="margin:0;width:100%;min-width:0;border:0"></blockquote>`; }
+  if(c.video) return `<video class="mvid" playsinline controls poster="${esc(c.poster||'')}"><source src="${esc(c.video)}"></video>`;
+  if(c.poster) return `<img class="mvid" src="${esc(c.poster)}">`;
+  return `<div class="mvid" style="display:flex;align-items:center;justify-content:center;color:#7d93a8;font-size:13px;text-align:center;padding:10px">Envie um vídeo ou cole um link do Instagram e toque em "Usar este link"</div>`;
+}
+function adminUseLink(){
+  const c=(D.cortes||[]).find(x=>x.id===admin.cid); if(!c)return;
+  const inp=document.querySelector('#modalBody input[data-adm="link"]'); const v=(inp?inp.value:(c.link||'')).trim();
+  if(!/instagram\.com\//i.test(v)){ alert('Cole um link válido do Instagram (reel ou post).'); return; }
+  c.link=v; scheduleSave(); renderCorteAdmin(); renderCal(); renderCortes();
+}
 function openCorteAdmin(cid){ const c=(D.cortes||[]).find(x=>x.id===cid); if(!c)return; const tp=corteTipo(c); admin={cid, tipo:tp, mode:(tp==="pago"?"pago":"org"), month:pickerDefaultMonth(c), rangeStart:null}; renderCorteAdmin(); }
 function addCorte(){ if(!EDIT)return; const id=nextCorteId(); const sem=(D.cortes||[]).length+1; D.cortes=D.cortes||[]; D.cortes.push({id, semana:sem, titulo:"Corte "+sem, status:"agendado", tipo:"organico"}); scheduleSave(); admin={cid:id, tipo:"organico", mode:"org", month:pickerDefaultMonth(), rangeStart:null}; renderCorteAdmin(); }
 function amode(){ return admin.tipo==="ambos"?admin.mode:(admin.tipo==="pago"?"pago":"org"); }
@@ -477,9 +493,7 @@ function pickerGrid(c){
 }
 function renderCorteAdmin(){
   const c=(D.cortes||[]).find(x=>x.id===admin.cid); const body=$("modalBody"); if(!c||!body){ closePopup(); return; }
-  const media=c.video?`<video class="mvid" playsinline controls poster="${esc(c.poster||'')}"><source src="${esc(c.video)}"></video>`
-              :(c.link?`<blockquote class="instagram-media" data-instgrm-permalink="${esc(c.link.endsWith('/')?c.link:c.link+'/')}" data-instgrm-version="14" style="margin:0;width:100%;min-width:0;border:0"></blockquote>`
-              :(c.poster?`<img class="mvid" src="${esc(c.poster)}">`:`<div class="mvid" style="display:flex;align-items:center;justify-content:center;color:#7d93a8;font-size:13px">Envie um vídeo ou cole um link do Instagram</div>`));
+  const media=corteMediaHTML(c);
   const t=admin.tipo;
   let h=`<div class="mtag" style="background:var(--navy)">⚙️ Gerenciar corte</div>
     <input class="adm-inp adm-nome" value="${esc(c.titulo||('Corte '+(c.semana||'')))}" oninput="adminNome(this.value)" placeholder="Nome do corte">
@@ -492,8 +506,10 @@ function renderCorteAdmin(){
       <button type="button" class="${admin.mode==='pago'?'on':''}" onclick="adminMode('pago')">Escolher período do anúncio</button></div>`; }
   h+=`<div class="adm-sel">${(t!=='pago'&&c.sobe_em)?`🟢 Orgânico: <b>${fmtBR(c.sobe_em)}</b>`:''}${(t!=='pago'&&c.sobe_em&&t!=='organico'&&c.pago_ini)?' &nbsp;·&nbsp; ':''}${(t!=='organico'&&c.pago_ini)?`🔵 Anúncio: <b>${fmtBR(c.pago_ini)} a ${fmtBR(c.pago_fim)}</b>`:''}${(!c.sobe_em&&!c.pago_ini)?'<span style="color:#7d93a8">selecione as datas no calendário abaixo</span>':''}</div>`;
   h+=pickerGrid(c);
-  h+=`<div class="adm-lbl">🔗 Link do Reel no Instagram (opcional — "upload por link")</div>
-    <input class="adm-inp" value="${esc(c.link||'')}" oninput="adminLink(this.value)" placeholder="https://www.instagram.com/reel/...">
+  h+=`<div class="adm-lbl">🔗 Vídeo por LINK do Instagram (cole o reel e toque em Usar)</div>
+    <div class="adm-linkrow"><input class="adm-inp" data-adm="link" value="${esc(c.link||'')}" oninput="adminLink(this.value)" placeholder="https://www.instagram.com/reel/...">
+      <button type="button" class="adm-uselink" onclick="adminUseLink()">Usar</button></div>
+    ${c.link?`<div style="margin:2px 0 6px"><button type="button" class="adm-clearlink" onclick="adminClearLink()">✕ remover link (voltar ao vídeo enviado)</button></div>`:''}
     <label class="mbtn edit" style="cursor:pointer">🎬 ${c.video?'Trocar':'Enviar'} vídeo do corte<input type="file" accept="video/*,.mov,.mp4" style="display:none" onchange="adminVideo(this)"></label>
     <div class="adm-actions"><button type="button" class="mbtn" onclick="adminDone()">✔️ Concluir</button>
       <button type="button" class="adm-del" onclick="adminDel()">🗑️ Excluir corte</button></div>`;
@@ -512,6 +528,7 @@ function adminPick(key){ const c=(D.cortes||[]).find(x=>x.id===admin.cid); if(!c
   renderCorteAdmin(); renderCal(); renderCortes(); renderTL(); scheduleSave(); }
 function adminNome(v){ const c=(D.cortes||[]).find(x=>x.id===admin.cid); if(c){ c.titulo=v; scheduleSave(); } }
 function adminLink(v){ const c=(D.cortes||[]).find(x=>x.id===admin.cid); if(c){ c.link=v.trim(); scheduleSave(); } }
+function adminClearLink(){ const c=(D.cortes||[]).find(x=>x.id===admin.cid); if(c){ delete c.link; scheduleSave(); renderCorteAdmin(); renderCal(); renderCortes(); } }
 async function adminVideo(inp){ const f=inp.files&&inp.files[0]; if(!f)return; if(!TOKEN){ alert('Abra com o link de edição (com token) para enviar arquivos.'); return; }
   const c=(D.cortes||[]).find(x=>x.id===admin.cid); if(!c)return; const lab=inp.parentElement, txt=lab.childNodes[0]; const old=txt?txt.nodeValue:'';
   if(txt) txt.nodeValue='enviando…';
@@ -526,9 +543,7 @@ function openPopup(kind,cid){
   const c=(D.cortes||[]).find(x=>x.id===cid); if(!c)return;
   if(EDIT){ openCorteAdmin(cid); return; }   // no modo edição, clicar abre o gerenciador
   const box=$("modal"), body=$("modalBody"); if(!box||!body)return;
-  const media=c.video?`<video class="mvid" playsinline controls poster="${esc(c.poster||'')}"><source src="${esc(c.video)}"></video>`
-              :(c.link?`<blockquote class="instagram-media" data-instgrm-permalink="${esc(c.link.endsWith('/')?c.link:c.link+'/')}" data-instgrm-version="14" style="margin:0;width:100%;min-width:0;border:0"></blockquote>`
-              :(c.poster?`<img class="mvid" src="${esc(c.poster)}">`:""));
+  const media=corteMediaHTML(c);
   const stL={agendado:"Agendado",no_ar:"No ar",publicado:"Publicado"}[c.status||"agendado"];
   let tag, info;
   if(kind==="pago"){
