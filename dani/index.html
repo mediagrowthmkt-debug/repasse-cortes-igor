@@ -77,6 +77,8 @@
   /* corte = miniatura do video, com FAIXA colorida no topo (verde=organico, azul=anuncio pago) */
   .orgthumb{display:block;height:36px;margin-top:3px;border-radius:6px;overflow:hidden;background:#0a1e33 center/cover no-repeat;border:2.5px solid var(--org);position:relative;cursor:pointer}
   .orgthumb.pago{border-color:var(--blue)}
+  .orgthumb.drag,.pgbar.drag{cursor:grab}
+  .orgthumb.drag:active,.pgbar.drag:active{cursor:grabbing}
   .orgthumb.done{filter:grayscale(.35);opacity:.7}
   .orgthumb .thlab{position:absolute;top:0;left:0;right:0;height:14px;line-height:14px;font-size:8px;font-weight:800;color:#fff;background:var(--org);text-align:center;letter-spacing:.4px}
   .orgthumb.pago .thlab{background:var(--blue)}
@@ -361,11 +363,11 @@ function renderCal(){
       const inWin=dt>=winS&&dt<=winE;
       const list=segs[key]||[]; let cont="";
       list.filter(s=>s.kind==="pago").forEach(s=>{
-        if(s.pos==="start"||s.pos==="solo"){ cont+=`<span class="orgthumb pago" onclick="openPopup('pago','${esc(s.cid)}');event.stopPropagation()" style="background-image:url('${esc(s.poster||'')}')" title="Anúncio pago começa — ${esc(s.titulo)}"><b class="thlab">🔵 PAGO</b><i>🚀</i></span>`; }
-        else if(s.pos==="end"){ cont+=`<span class="pgbar end" onclick="openPopup('pago','${esc(s.cid)}');event.stopPropagation()" title="Anúncio pago termina — ${esc(s.titulo)}">🏁 fim anúncio</span>`; }
+        if(s.pos==="start"||s.pos==="solo"){ cont+=`<span class="orgthumb pago ${EDIT?'drag':''}" ${EDIT?`draggable="true" data-kind="pago" data-cid="${esc(s.cid)}"`:""} onclick="openPopup('pago','${esc(s.cid)}');event.stopPropagation()" style="background-image:url('${esc(s.poster||'')}')" title="Anúncio pago — ${esc(s.titulo)}${EDIT?' (arraste p/ mover o período)':''}"><b class="thlab">🔵 PAGO</b><i>🚀</i></span>`; }
+        else if(s.pos==="end"){ cont+=`<span class="pgbar end ${EDIT?'drag':''}" ${EDIT?`draggable="true" data-kind="pagofim" data-cid="${esc(s.cid)}"`:""} onclick="openPopup('pago','${esc(s.cid)}');event.stopPropagation()" title="Fim do anúncio — ${esc(s.titulo)}${EDIT?' (arraste p/ mudar o fim)':''}">🏁 fim anúncio</span>`; }
         /* dias do meio: sem etiqueta, pra nao poluir */
       });
-      list.filter(s=>s.kind==="org").forEach(s=>{ cont+=`<span class="orgthumb org" onclick="openPopup('org','${esc(s.cid)}');event.stopPropagation()" style="background-image:url('${esc(s.poster||'')}')" title="${esc(s.titulo)} — publicação orgânica"><b class="thlab">🟢 ORGÂNICO</b><i>▶</i></span>`; });
+      list.filter(s=>s.kind==="org").forEach(s=>{ cont+=`<span class="orgthumb org ${EDIT?'drag':''}" ${EDIT?`draggable="true" data-kind="org" data-cid="${esc(s.cid)}"`:""} onclick="openPopup('org','${esc(s.cid)}');event.stopPropagation()" style="background-image:url('${esc(s.poster||'')}')" title="${esc(s.titulo)} — publicação orgânica${EDIT?' (arraste p/ mover)':''}"><b class="thlab">🟢 ORGÂNICO</b><i>▶</i></span>`; });
       list.filter(s=>s.kind==="orgtext").forEach(s=>{ cont+=`<span class="chip org ${s.done?'done':''}">${esc(s.label)}</span>`; });
       const nt=notas[key]?`<span class="note" ${EDIT?`onclick="editNota('${key}');event.stopPropagation()"`:""}>📝 ${esc(notas[key])}</span>`:"";
       const clk=(EDIT && inWin)?` onclick="cellClick(event,'${key}')" style="cursor:pointer"`:"";
@@ -380,18 +382,25 @@ function renderCal(){
     <span><i style="background:var(--org)"></i>Corte (publicação orgânica)</span>
     <span><i style="background:var(--blue)"></i>Anúncio (pago)</span>
     <span><i style="background:#c9d3df"></i>Já publicado</span>
-    ${EDIT?'<span style="color:var(--blue);font-weight:700">clique num corte ou num dia para editar</span>':'<span style="color:var(--muted)">toque num corte para ver os detalhes</span>'}</div>`;
+    ${EDIT?'<span style="color:var(--blue);font-weight:700">arraste as miniaturas p/ mover · clique num dia p/ nota</span>':'<span style="color:var(--muted)">toque num corte para ver os detalhes</span>'}</div>`;
   $("cal").innerHTML=html;
+  if(EDIT) wireCalDrag();
 }
+let dragData=null;
 function wireCalDrag(){
-  document.querySelectorAll('.orgthumb.drag,.ribbon.drag').forEach(el=>{
-    el.addEventListener('dragstart',e=>{ dragData={kind:el.dataset.kind,cid:el.dataset.cid}; e.dataTransfer.effectAllowed="move"; });
+  document.querySelectorAll('.orgthumb.drag,.pgbar.drag').forEach(el=>{
+    el.addEventListener('dragstart',e=>{ dragData={kind:el.dataset.kind,cid:el.dataset.cid}; e.dataTransfer.effectAllowed="move"; e.stopPropagation(); });
+    el.addEventListener('dragend',()=>{ dragData=null; document.querySelectorAll('.day.dragover').forEach(x=>x.classList.remove('dragover')); });
   });
   document.querySelectorAll('.day[data-day]').forEach(cell=>{
-    cell.addEventListener('dragover',e=>{ e.preventDefault(); cell.classList.add('dragover'); });
+    cell.addEventListener('dragover',e=>{ if(!dragData)return; e.preventDefault(); cell.classList.add('dragover'); });
     cell.addEventListener('dragleave',()=>cell.classList.remove('dragover'));
     cell.addEventListener('drop',e=>{ e.preventDefault(); cell.classList.remove('dragover'); if(!dragData)return; const day=cell.dataset.day; const c=(D.cortes||[]).find(x=>x.id===dragData.cid);
-      if(c){ if(dragData.kind==="org"){ c.sobe_em=day; } else if(dragData.kind==="pago"){ const days=dateRange(c.pago_ini,c.pago_fim); const dur=Math.max(1,days.length); const s=dpar(day); const en=new Date(s); en.setDate(en.getDate()+dur-1); c.pago_ini=day; c.pago_fim=isoOf(en); } }
+      if(c){
+        if(dragData.kind==="org"){ c.sobe_em=day; }
+        else if(dragData.kind==="pago"){ const days=dateRange(c.pago_ini,c.pago_fim); const dur=Math.max(1,days.length); const s=dpar(day); const en=new Date(s); en.setDate(en.getDate()+dur-1); c.pago_ini=day; c.pago_fim=isoOf(en); }
+        else if(dragData.kind==="pagofim"){ if(c.pago_ini && dpar(day)<dpar(c.pago_ini)){ c.pago_fim=c.pago_ini; } else { c.pago_fim=day; } }
+      }
       dragData=null; renderCal(); renderCortes(); renderTL(); scheduleSave(); });
   });
 }
