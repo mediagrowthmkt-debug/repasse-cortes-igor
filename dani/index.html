@@ -79,10 +79,15 @@
   .orgthumb.done{filter:grayscale(.35);opacity:.75}
   .orgthumb.drag{cursor:grab}
   .orgthumb i{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-style:normal;font-size:9px;color:#fff;background:rgba(0,0,0,.5);width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;padding-left:1px}
-  /* faixa de anuncio pago (range) */
-  .pgbar{display:block;height:15px;line-height:15px;margin-top:3px;background:var(--blue);color:#fff;font-size:8.6px;font-weight:800;padding:0 4px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;cursor:pointer}
-  .pgbar.drag{cursor:grab}
-  .pgbar.start{border-radius:7px 0 0 7px} .pgbar.end{border-radius:0 7px 7px 0} .pgbar.mid{border-radius:0} .pgbar.solo{border-radius:7px}
+  /* semana = linha do calendario; faixa de anuncio atravessa as colunas (passa por cima dos cards) */
+  .dowrow{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+  .week{position:relative;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;margin-bottom:5px}
+  .day .rlane{height:16px;margin-top:2px}
+  .ribbon{align-self:start;margin-top:20px;height:15px;line-height:15px;background:var(--blue);color:#fff;font-size:8.8px;font-weight:800;
+          padding:0 6px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;cursor:pointer;z-index:3;box-sizing:border-box;
+          box-shadow:0 1px 3px rgba(1,45,90,.3)}
+  .ribbon.drag{cursor:grab}
+  .ribbon.rs{border-radius:8px 0 0 8px} .ribbon.re{border-radius:0 8px 8px 0} .ribbon.rs.re{border-radius:8px}
   /* modal / pop-up */
   .modal{display:none;position:fixed;inset:0;z-index:50;background:rgba(1,20,40,.55);align-items:center;justify-content:center;padding:18px}
   .modalcard{background:#fff;border-radius:16px;max-width:360px;width:100%;padding:18px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.35);max-height:88vh;overflow:auto}
@@ -343,42 +348,57 @@ let dragData=null;
 function renderCal(){
   const pt=D.patrocinio||{}; const start=dpar(pt.inicio)||new Date(); const end=dpar(pt.fim)||start;
   const segs=calSegments(); const notas=D.notas||{}; const today=new Date(); today.setHours(0,0,0,0);
+  const winS=new Date(start.getFullYear(),start.getMonth(),start.getDate()), winE=new Date(end.getFullYear(),end.getMonth(),end.getDate());
   let months=[]; let cur=new Date(start.getFullYear(),start.getMonth(),1); const last=new Date(end.getFullYear(),end.getMonth(),1);
   while(cur<=last){ months.push(new Date(cur)); cur.setMonth(cur.getMonth()+1); if(months.length>3)break; }
+  const pagos=(D.cortes||[]).filter(c=>c.pago_ini&&c.pago_fim);
+  const kof=(y,m,d)=>`${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
   let html="";
   months.forEach(mo=>{
     const y=mo.getFullYear(), m=mo.getMonth();
-    html+=`<div class="mhead"><b>${MESES[m]} de ${y}</b></div><div class="grid">`;
-    DOW.forEach(d=>html+=`<div class="dow">${d}</div>`);
+    html+=`<div class="mhead"><b>${MESES[m]} de ${y}</b></div>`;
+    html+=`<div class="dowrow">`+DOW.map(d=>`<div class="dow">${d}</div>`).join("")+`</div>`;
     const first=new Date(y,m,1).getDay(), dim=new Date(y,m+1,0).getDate();
-    for(let i=0;i<first;i++) html+=`<div class="day out"></div>`;
-    for(let d=1;d<=dim;d++){
-      const key=`${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
-      const dt=new Date(y,m,d), isT=dt.getTime()===today.getTime();
-      const inWin=dt>=new Date(start.getFullYear(),start.getMonth(),start.getDate())&&dt<=new Date(end.getFullYear(),end.getMonth(),end.getDate());
-      const list=segs[key]||[]; let cont="";
-      list.filter(s=>s.kind==="pago").forEach(s=>{ const lbl=(s.pos==="start"||s.pos==="solo")?("🚀 "+esc(s.titulo)):""; cont+=`<span class="pgbar ${s.pos} ${EDIT?'drag':''}" ${EDIT?'draggable="true"':""} data-cid="${esc(s.cid)}" data-kind="pago" onclick="openPopup('pago','${esc(s.cid)}');event.stopPropagation()" title="Anúncio rodando — ${esc(s.titulo)}">${lbl}</span>`; });
-      list.filter(s=>s.kind==="org").forEach(s=>{ cont+=`<span class="orgthumb ${s.done?'done':''} ${EDIT?'drag':''}" ${EDIT?'draggable="true"':""} data-cid="${esc(s.cid)}" data-kind="org" onclick="openPopup('org','${esc(s.cid)}');event.stopPropagation()" style="background-image:url('${esc(s.poster||'')}')" title="${esc(s.titulo)} — publicação orgânica"><i>▶</i></span>`; });
-      list.filter(s=>s.kind==="orgtext").forEach(s=>{ cont+=`<span class="chip org ${s.done?'done':''}">${esc(s.label)}</span>`; });
-      const nt=notas[key]?`<span class="note" ${EDIT?`onclick="editNota('${key}');event.stopPropagation()"`:""}>📝 ${esc(notas[key])}</span>`:"";
-      const clk=(EDIT && inWin)?` onclick="cellClick(event,'${key}')" style="cursor:pointer"`:"";
-      const plus=(EDIT && inWin && !notas[key])?`<span class="addnote">＋ nota</span>`:"";
-      html+=`<div class="day ${isT?'today':''} ${inWin?'':'out'}" data-day="${key}"${clk}><div class="n">${d}</div>${cont}${nt}${plus}</div>`;
+    let cells=[]; for(let i=0;i<first;i++) cells.push(0); for(let d=1;d<=dim;d++) cells.push(d); while(cells.length%7) cells.push(0);
+    for(let w=0; w<cells.length/7; w++){
+      const week=cells.slice(w*7,w*7+7);
+      html+=`<div class="week">`;
+      week.forEach((d,col)=>{
+        const gc=`grid-row:1;grid-column:${col+1}`;
+        if(!d){ html+=`<div class="day out" style="${gc}"></div>`; return; }
+        const key=kof(y,m,d), dt=new Date(y,m,d), isT=dt.getTime()===today.getTime();
+        const inWin=dt>=winS&&dt<=winE;
+        const list=segs[key]||[]; let cont="";
+        list.filter(s=>s.kind==="org").forEach(s=>{ cont+=`<span class="orgthumb ${s.done?'done':''} ${EDIT?'drag':''}" ${EDIT?'draggable="true"':""} data-cid="${esc(s.cid)}" data-kind="org" onclick="openPopup('org','${esc(s.cid)}');event.stopPropagation()" style="background-image:url('${esc(s.poster||'')}')" title="${esc(s.titulo)} — publicação orgânica"><i>▶</i></span>`; });
+        list.filter(s=>s.kind==="orgtext").forEach(s=>{ cont+=`<span class="chip org ${s.done?'done':''}">${esc(s.label)}</span>`; });
+        const nt=notas[key]?`<span class="note" ${EDIT?`onclick="editNota('${key}');event.stopPropagation()"`:""}>📝 ${esc(notas[key])}</span>`:"";
+        const plus=(EDIT && inWin && !notas[key])?`<span class="addnote">＋ nota</span>`:"";
+        const clk=(EDIT && inWin)?` onclick="cellClick(event,'${key}')" style="${gc};cursor:pointer"`:` style="${gc}"`;
+        html+=`<div class="day ${isT?'today':''} ${inWin?'':'out'}" data-day="${key}"${clk}><div class="n">${d}</div><div class="rlane"></div>${cont}${nt}${plus}</div>`;
+      });
+      // faixa CONTINUA de anuncio: 1 elemento que atravessa as colunas da semana (passa por cima dos cards)
+      pagos.forEach(c=>{
+        let sc=-1, ec=-1;
+        week.forEach((d,col)=>{ if(!d) return; const dd=dpar(kof(y,m,d)); if(dd>=dpar(c.pago_ini)&&dd<=dpar(c.pago_fim)){ if(sc<0)sc=col; ec=col; } });
+        if(sc>=0){
+          const rs = kof(y,m,week[sc])===String(c.pago_ini).slice(0,10);
+          const re = kof(y,m,week[ec])===String(c.pago_fim).slice(0,10);
+          html+=`<div class="ribbon ${rs?'rs':''} ${re?'re':''} ${EDIT?'drag':''}" ${EDIT?'draggable="true"':""} data-cid="${esc(c.id)}" data-kind="pago" style="grid-row:1;grid-column:${sc+1}/${ec+2}" onclick="openPopup('pago','${esc(c.id)}');event.stopPropagation()" title="Anúncio rodando — ${esc(corteTit(c))}">🚀 ${esc(corteTit(c))}</div>`;
+        }
+      });
+      html+=`</div>`;
     }
-    const cells=first+dim, rest=(7-(cells%7))%7;
-    for(let i=0;i<rest;i++) html+=`<div class="day out"></div>`;
-    html+=`</div>`;
   });
   html+=`<div class="legend">
     <span><i style="background:var(--org)"></i>Corte (publicação orgânica)</span>
     <span><i style="background:var(--blue)"></i>Anúncio rodando (pago)</span>
     <span><i style="background:#c9d3df"></i>Já publicado</span>
-    ${EDIT?'<span style="color:var(--blue);font-weight:700">arraste as miniaturas/faixas · clique num dia p/ nota</span>':'<span style="color:var(--muted)">toque num corte para ver os detalhes</span>'}</div>`;
+    ${EDIT?'<span style="color:var(--blue);font-weight:700">arraste a miniatura/faixa · clique num dia p/ nota</span>':'<span style="color:var(--muted)">toque num corte para ver os detalhes</span>'}</div>`;
   $("cal").innerHTML=html;
   if(EDIT) wireCalDrag();
 }
 function wireCalDrag(){
-  document.querySelectorAll('.orgthumb.drag,.pgbar.drag').forEach(el=>{
+  document.querySelectorAll('.orgthumb.drag,.ribbon.drag').forEach(el=>{
     el.addEventListener('dragstart',e=>{ dragData={kind:el.dataset.kind,cid:el.dataset.cid}; e.dataTransfer.effectAllowed="move"; });
   });
   document.querySelectorAll('.day[data-day]').forEach(cell=>{
