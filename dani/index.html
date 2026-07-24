@@ -74,11 +74,12 @@
   .chip.org{background:var(--org)}
   .chip.done{opacity:.55;text-decoration:line-through}
   .chip.drag{cursor:grab}
-  /* corte organico = miniatura do video */
-  .orgthumb{display:block;height:30px;margin-top:3px;border-radius:5px;background:#0a1e33 center/cover no-repeat;border:2px solid var(--org);position:relative;cursor:pointer}
+  /* corte = miniatura do video (verde=organico, azul=anuncio pago) */
+  .orgthumb{display:block;height:26px;margin-top:3px;border-radius:5px;background:#0a1e33 center/cover no-repeat;border:2px solid var(--org);position:relative;cursor:pointer}
+  .orgthumb.pago{border-color:var(--blue)}
   .orgthumb.done{filter:grayscale(.35);opacity:.75}
-  .orgthumb.drag{cursor:grab}
-  .orgthumb i{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-style:normal;font-size:9px;color:#fff;background:rgba(0,0,0,.5);width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;padding-left:1px}
+  .orgthumb i{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-style:normal;font-size:8px;color:#fff;background:rgba(0,0,0,.5);width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+  .orgthumb.pago i{background:var(--blue)}
   /* etiqueta de anuncio pago (uma por dia do periodo) */
   .pgbar{display:block;height:15px;line-height:15px;margin-top:3px;background:var(--blue);color:#fff;font-size:8.6px;font-weight:800;padding:0 4px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;cursor:pointer}
   .pgbar.start{border-radius:6px 6px 6px 6px} .pgbar.solo{border-radius:6px} .pgbar.mid,.pgbar.end{border-radius:6px}
@@ -182,8 +183,9 @@
     .day{min-height:58px;padding:3px 3px 4px;border-radius:8px}
     .day .n{font-size:10px}
     .chip{font-size:8.8px;padding:1px 4px;margin-top:2px;border-radius:5px}
-    .orgthumb{height:24px;margin-top:2px;border-width:1.5px}
-    .orgthumb i{width:13px;height:13px;font-size:8px}
+    .day{min-height:64px}
+    .orgthumb{height:21px;margin-top:2px;border-width:1.5px}
+    .orgthumb i{width:12px;height:12px;font-size:7px}
     .pgbar{height:12px;line-height:12px;font-size:7.4px;margin-top:2px;padding:0 3px}
     .note{font-size:8.6px;padding:2px 4px}
     .legend{gap:8px 12px;font-size:11px}
@@ -333,7 +335,7 @@ function calSegments(){
   (D.cortes||[]).forEach(c=>{
     if(c.sobe_em) push(String(c.sobe_em).slice(0,10),{kind:"org",cid:c.id,poster:c.poster,titulo:corteTit(c),done:c.status==="publicado"});
     if(c.pago_ini && c.pago_fim){ const days=dateRange(c.pago_ini,c.pago_fim);
-      days.forEach((day,i)=>push(day,{kind:"pago",cid:c.id,titulo:corteTit(c),pos:days.length===1?"solo":(i===0?"start":(i===days.length-1?"end":"mid"))})); }
+      days.forEach((day,i)=>push(day,{kind:"pago",cid:c.id,titulo:corteTit(c),poster:c.poster,pos:days.length===1?"solo":(i===0?"start":(i===days.length-1?"end":"mid"))})); }
   });
   (D.organicos||[]).forEach(o=>{ if(o.data) push(String(o.data).slice(0,10),{kind:"orgtext",label:o.tipo||"Post",done:o.status==="publicado"}); });
   return seg;
@@ -356,8 +358,11 @@ function renderCal(){
       const dt=new Date(y,m,d), isT=dt.getTime()===today.getTime();
       const inWin=dt>=winS&&dt<=winE;
       const list=segs[key]||[]; let cont="";
-      list.filter(s=>s.kind==="pago").forEach(s=>{ const lbl=(s.pos==="start"||s.pos==="solo")?("🚀 "+esc(s.titulo)):"🔵 anúncio"; cont+=`<span class="pgbar ${s.pos}" onclick="openPopup('pago','${esc(s.cid)}');event.stopPropagation()" title="Anúncio pago — ${esc(s.titulo)}">${lbl}</span>`; });
-      list.filter(s=>s.kind==="org").forEach(s=>{ cont+=`<span class="orgthumb ${s.done?'done':''}" onclick="openPopup('org','${esc(s.cid)}');event.stopPropagation()" style="background-image:url('${esc(s.poster||'')}')" title="${esc(s.titulo)} — publicação orgânica"><i>▶</i></span>`; });
+      list.filter(s=>s.kind==="pago").forEach(s=>{
+        if(s.pos==="start"||s.pos==="solo"){ cont+=`<span class="orgthumb pago" onclick="openPopup('pago','${esc(s.cid)}');event.stopPropagation()" style="background-image:url('${esc(s.poster||'')}')" title="Anúncio pago — ${esc(s.titulo)}"><i>🚀</i></span>`; }
+        else { cont+=`<span class="pgbar ${s.pos}" onclick="openPopup('pago','${esc(s.cid)}');event.stopPropagation()" title="Anúncio pago — ${esc(s.titulo)}">🔵 anúncio</span>`; }
+      });
+      list.filter(s=>s.kind==="org").forEach(s=>{ cont+=`<span class="orgthumb org" onclick="openPopup('org','${esc(s.cid)}');event.stopPropagation()" style="background-image:url('${esc(s.poster||'')}')" title="${esc(s.titulo)} — publicação orgânica"><i>▶</i></span>`; });
       list.filter(s=>s.kind==="orgtext").forEach(s=>{ cont+=`<span class="chip org ${s.done?'done':''}">${esc(s.label)}</span>`; });
       const nt=notas[key]?`<span class="note" ${EDIT?`onclick="editNota('${key}');event.stopPropagation()"`:""}>📝 ${esc(notas[key])}</span>`:"";
       const clk=(EDIT && inWin)?` onclick="cellClick(event,'${key}')" style="cursor:pointer"`:"";
