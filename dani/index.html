@@ -749,8 +749,16 @@ async function live(){
     if(s&&s.painel){ D=Object.assign({},D,s.painel); render(); }
   }catch(e){}
 }
-render(); live(); setInterval(live,30000);
-if(EDIT && TOKEN) setTimeout(backfillPosters, 2600);
+async function initLoad(){
+  // SEMPRE carrega o estado salvo no backend ao abrir (fonte de verdade das edições)
+  if(API_BASE && API_BASE.indexOf("__")!==0){
+    try{ const r=await fetch(API_BASE+"?action=get&slug="+encodeURIComponent((D.convidado||{}).slug||""),{cache:"no-store"}); const s=await r.json(); if(s && s.painel){ D=Object.assign({},D,s.painel); } }catch(e){}
+  }
+  render();
+  if(EDIT){ if(TOKEN) setTimeout(backfillPosters,2000); }   // no modo edição NÃO auto-atualiza (não atropela sua edição)
+  else { setInterval(live,30000); }                          // no modo cliente, atualiza sozinho
+}
+render(); initLoad();
 </script>
 </body>
 </html>
