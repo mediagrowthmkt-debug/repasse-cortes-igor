@@ -74,6 +74,25 @@
   .chip.org{background:var(--org)}
   .chip.done{opacity:.55;text-decoration:line-through}
   .chip.drag{cursor:grab}
+  /* corte organico = miniatura do video */
+  .orgthumb{display:block;height:30px;margin-top:3px;border-radius:5px;background:#0a1e33 center/cover no-repeat;border:2px solid var(--org);position:relative;cursor:pointer}
+  .orgthumb.done{filter:grayscale(.35);opacity:.75}
+  .orgthumb.drag{cursor:grab}
+  .orgthumb i{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-style:normal;font-size:9px;color:#fff;background:rgba(0,0,0,.5);width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;padding-left:1px}
+  /* faixa de anuncio pago (range) */
+  .pgbar{display:block;height:15px;line-height:15px;margin-top:3px;background:var(--blue);color:#fff;font-size:8.6px;font-weight:800;padding:0 4px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;cursor:pointer}
+  .pgbar.drag{cursor:grab}
+  .pgbar.start{border-radius:7px 0 0 7px} .pgbar.end{border-radius:0 7px 7px 0} .pgbar.mid{border-radius:0} .pgbar.solo{border-radius:7px}
+  /* modal / pop-up */
+  .modal{display:none;position:fixed;inset:0;z-index:50;background:rgba(1,20,40,.55);align-items:center;justify-content:center;padding:18px}
+  .modalcard{background:#fff;border-radius:16px;max-width:360px;width:100%;padding:18px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.35);max-height:88vh;overflow:auto}
+  .modalcard h3{margin:8px 0 10px;color:var(--navy);font-size:18px}
+  .modalcard p{font-size:14px;color:#28425f;line-height:1.65;margin:0}
+  .mclose{position:absolute;top:10px;right:12px;border:0;background:#eef2f7;width:28px;height:28px;border-radius:50%;font-weight:800;cursor:pointer;color:#5b6b7d}
+  .mtag{display:inline-block;color:#fff;font-size:11px;font-weight:800;padding:3px 10px;border-radius:999px}
+  .mvid{width:100%;border-radius:12px;margin:6px 0 12px;background:#000;max-height:60vh;aspect-ratio:9/16;object-fit:cover;display:block}
+  .mbtn{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px;background:var(--red);color:#fff;font-weight:800;font-size:13px;padding:11px;border-radius:10px;text-decoration:none;border:0;width:100%;cursor:pointer}
+  .mbtn.edit{background:#fff;color:var(--blue);border:1px dashed #b9c6d6}
   .note{display:block;margin-top:3px;font-size:9.6px;color:#6a4a00;background:#fff6df;border:1px solid #ffe6a6;border-radius:5px;padding:2px 5px;line-height:1.3;white-space:normal;cursor:pointer}
   .addnote{display:block;margin-top:3px;font-size:9.4px;color:#9aa7b5;opacity:0;transition:opacity .15s}
   .day:hover .addnote{opacity:1}
@@ -161,14 +180,18 @@
     .grid{gap:3px}
     .cal .mhead b{font-size:14px}
     .dow{font-size:9.5px;padding:2px 0}
-    .day{min-height:54px;padding:3px 3px 4px;border-radius:8px}
+    .day{min-height:58px;padding:3px 3px 4px;border-radius:8px}
     .day .n{font-size:10px}
     .chip{font-size:8.8px;padding:1px 4px;margin-top:2px;border-radius:5px}
+    .orgthumb{height:24px;margin-top:2px;border-width:1.5px}
+    .orgthumb i{width:13px;height:13px;font-size:8px}
+    .pgbar{height:12px;line-height:12px;font-size:7.4px;margin-top:2px;padding:0 3px}
     .note{font-size:8.6px;padding:2px 4px}
     .legend{gap:8px 12px;font-size:11px}
+    .modalcard{padding:14px}
   }
   @media(max-width:380px){
-    .day{min-height:48px} .chip{font-size:8px;padding:1px 3px} .dow{font-size:8.5px}
+    .day{min-height:52px} .chip{font-size:8px;padding:1px 3px} .dow{font-size:8.5px} .orgthumb{height:22px}
   }
 </style>
 </head>
@@ -232,8 +255,12 @@
     </div>
   </div>
 
+  <div id="modal" class="modal" onclick="if(event.target===this)closePopup()">
+    <div class="modalcard"><button class="mclose" onclick="closePopup()" aria-label="Fechar">✕</button><div id="modalBody"></div></div>
+  </div>
+
 <script>
-const PAINEL = {"schema": 1, "cliente": "Repasse Podcast", "convidado": {"slug": "dani", "nome": "Dani", "empresa": "", "cargo": "", "foto": "", "episodio": "", "gravado_em": "", "instagram": "https://www.instagram.com/eudanirepassefloripa/"}, "brand": {"navy": "#012D5A", "red": "#FE3231", "blue": "#01509D"}, "logo": "assets/logo.png", "episodio_youtube": "YBAcoHafd-k", "patrocinio": {"inicio": "2026-07-20", "fim": "2026-08-16", "total_posts": 4, "resumo": "5 cortes do seu episodio publicados aos poucos + 1 campanha de trafego pago levando pessoas ate o seu Instagram."}, "plano_intro": "Aqui voce acompanha, em tempo real, tudo o que a MediaGrowth esta fazendo com o seu episodio: quando cada corte sobe, o que ja publicou e como esta a campanha que leva o seu conteudo aos lojistas do nicho automotivo.", "plano": [{"icone": "🎬", "titulo": "5 cortes do episodio", "desc": "Os melhores momentos, publicados aos poucos nas redes do Repasse Podcast."}, {"icone": "🚀", "titulo": "Trafego pro seu Instagram", "desc": "Impulsionamento pago levando pessoas do publico certo ate o seu perfil."}, {"icone": "🔁", "titulo": "Troca semanal", "desc": "A cada domingo a campanha passa a impulsionar o proximo corte, dando fôlego novo a cada semana."}, {"icone": "📊", "titulo": "Numeros ao vivo", "desc": "Cliques, visitas ao perfil e alcance da campanha sempre atualizados nesta pagina."}], "cortes": [{"id": "01", "semana": 1, "titulo": "Corte 1", "turbinado": true, "status": "no_ar", "sobe_em": "2026-07-20", "pago_em": "2026-07-20", "video": "https://mediagrowth.com.br/cortes/repasse-dani/videos/dani-corte-01.mp4", "poster": "assets/poster-01.jpg", "link": ""}, {"id": "02", "semana": 2, "titulo": "Corte 2", "turbinado": false, "status": "agendado", "sobe_em": "2026-07-27", "pago_em": "2026-07-26", "video": "https://mediagrowth.com.br/cortes/repasse-dani/videos/dani-corte-02.mp4", "poster": "assets/poster-02.jpg", "link": ""}, {"id": "03", "semana": 3, "titulo": "Corte 3", "turbinado": false, "status": "agendado", "sobe_em": "2026-08-03", "pago_em": "2026-08-02", "video": "https://mediagrowth.com.br/cortes/repasse-dani/videos/dani-corte-03.mp4", "poster": "assets/poster-03.jpg", "link": ""}, {"id": "04", "semana": 4, "titulo": "Corte 4", "turbinado": false, "status": "agendado", "sobe_em": "2026-08-10", "pago_em": "2026-08-09", "video": "https://mediagrowth.com.br/cortes/repasse-dani/videos/dani-corte-04.mp4", "poster": "assets/poster-04.jpg", "link": ""}, {"id": "05", "semana": 5, "titulo": "Corte 5", "turbinado": false, "status": "agendado", "sobe_em": "2026-08-15", "video": "https://mediagrowth.com.br/cortes/repasse-dani/videos/dani-corte-05.mp4", "poster": "assets/poster-05.jpg", "link": ""}], "organicos": [], "notas": {"2026-07-26": "Troca do impulsionamento: Corte 1 -> Corte 2 (domingo)"}, "campanha": {"status": "ativa", "conta": "Repasse Podcast Ads", "account_id": "act_1275229611165039", "campaign_id": "120245479490130582", "campanha_nome": "20-07-26 - Reconhecimento - Reel Dani Repasse Floripa", "objetivo": "Levar pessoas do publico certo ate o Instagram do convidado (trafego / cliques no link)", "publico": "Lojistas e repassadores de veiculos (donos de loja de carro, do pequeno ao premium)", "regiao": "Grande Florianopolis / SC", "periodo": "", "gasto": null, "impressoes": null, "alcance": null, "link_clicks": null, "perfil": null, "views": null, "cliques": null, "ctr": null, "agenda": [], "anuncios": [{"nome": "Reel Dani Repasse Floripa", "ig": "https://www.instagram.com/p/DbBwq4ygIWN/"}]}, "atualizado_em": "2026-07-24"};
+const PAINEL = {"schema": 1, "cliente": "Repasse Podcast", "convidado": {"slug": "dani", "nome": "Dani", "empresa": "", "cargo": "", "foto": "", "episodio": "", "gravado_em": "", "instagram": "https://www.instagram.com/eudanirepassefloripa/"}, "brand": {"navy": "#012D5A", "red": "#FE3231", "blue": "#01509D"}, "logo": "assets/logo.png", "episodio_youtube": "YBAcoHafd-k", "patrocinio": {"inicio": "2026-07-20", "fim": "2026-08-16", "total_posts": 4, "resumo": "5 cortes do seu episodio publicados aos poucos + 1 campanha de trafego pago levando pessoas ate o seu Instagram."}, "plano_intro": "Aqui voce acompanha, em tempo real, tudo o que a MediaGrowth esta fazendo com o seu episodio: quando cada corte sobe, o que ja publicou e como esta a campanha que leva o seu conteudo aos lojistas do nicho automotivo.", "plano": [{"icone": "🎬", "titulo": "5 cortes do episodio", "desc": "Os melhores momentos, publicados aos poucos nas redes do Repasse Podcast."}, {"icone": "🚀", "titulo": "Trafego pro seu Instagram", "desc": "Impulsionamento pago levando pessoas do publico certo ate o seu perfil."}, {"icone": "🔁", "titulo": "Troca semanal", "desc": "A cada domingo a campanha passa a impulsionar o proximo corte, dando fôlego novo a cada semana."}, {"icone": "📊", "titulo": "Numeros ao vivo", "desc": "Cliques, visitas ao perfil e alcance da campanha sempre atualizados nesta pagina."}], "cortes": [{"id": "01", "semana": 1, "titulo": "Corte 1", "turbinado": true, "status": "no_ar", "sobe_em": "2026-07-20", "video": "https://mediagrowth.com.br/cortes/repasse-dani/videos/dani-corte-01.mp4", "poster": "assets/poster-01.jpg", "link": "", "pago_ini": "2026-07-20", "pago_fim": "2026-07-26"}, {"id": "02", "semana": 2, "titulo": "Corte 2", "turbinado": false, "status": "agendado", "sobe_em": "2026-07-27", "video": "https://mediagrowth.com.br/cortes/repasse-dani/videos/dani-corte-02.mp4", "poster": "assets/poster-02.jpg", "link": "", "pago_ini": "2026-07-27", "pago_fim": "2026-08-02"}, {"id": "03", "semana": 3, "titulo": "Corte 3", "turbinado": false, "status": "agendado", "sobe_em": "2026-08-03", "video": "https://mediagrowth.com.br/cortes/repasse-dani/videos/dani-corte-03.mp4", "poster": "assets/poster-03.jpg", "link": "", "pago_ini": "2026-08-03", "pago_fim": "2026-08-09"}, {"id": "04", "semana": 4, "titulo": "Corte 4", "turbinado": false, "status": "agendado", "sobe_em": "2026-08-10", "video": "https://mediagrowth.com.br/cortes/repasse-dani/videos/dani-corte-04.mp4", "poster": "assets/poster-04.jpg", "link": "", "pago_ini": "2026-08-10", "pago_fim": "2026-08-16"}, {"id": "05", "semana": 5, "titulo": "Corte 5", "turbinado": false, "status": "agendado", "sobe_em": "2026-08-15", "video": "https://mediagrowth.com.br/cortes/repasse-dani/videos/dani-corte-05.mp4", "poster": "assets/poster-05.jpg", "link": ""}], "organicos": [], "notas": {"2026-07-26": "Troca do impulsionamento: Corte 1 -> Corte 2 (domingo)"}, "campanha": {"status": "ativa", "conta": "Repasse Podcast Ads", "account_id": "act_1275229611165039", "campaign_id": "120245479490130582", "campanha_nome": "20-07-26 - Reconhecimento - Reel Dani Repasse Floripa", "objetivo": "Levar pessoas do publico certo ate o Instagram do convidado (trafego / cliques no link)", "publico": "Lojistas e repassadores de veiculos (donos de loja de carro, do pequeno ao premium)", "regiao": "Grande Florianopolis / SC", "periodo": "", "gasto": null, "impressoes": null, "alcance": null, "link_clicks": null, "perfil": null, "views": null, "cliques": null, "ctr": null, "agenda": [], "anuncios": [{"nome": "Reel Dani Repasse Floripa", "ig": "https://www.instagram.com/p/DbBwq4ygIWN/"}]}, "atualizado_em": "2026-07-24"};
 const API_BASE = "https://mediagrowth.com.br/paineis-api/api.php";
 const MESES=["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
 const DOW=["dom","seg","ter","qua","qui","sex","sáb"];
@@ -299,28 +326,23 @@ function renderEditbar(){
 }
 
 /* ---- eventos por dia (cortes/organicos/impulsionamento) ---- */
-function eventsByDay(){
-  const m={};
-  const add=(date,cls,label,done,ref)=>{ if(!date)return; const k=String(date).slice(0,10); (m[k]=m[k]||[]).push({cls,label,done,ref}); };
+function corteTit(c){ return c.titulo||("Corte "+(c.semana||"")); }
+function isoOf(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function dateRange(a,b){ const out=[]; let d=dpar(a),e=dpar(b); if(!d||!e)return out; if(e<d){const t=d;d=e;e=t;} let cur=new Date(d),g=0; while(cur<=e && g++<400){ out.push(isoOf(cur)); cur.setDate(cur.getDate()+1);} return out; }
+function calSegments(){
+  const seg={}; const push=(k,o)=>{ (seg[k]=seg[k]||[]).push(o); };
   (D.cortes||[]).forEach(c=>{
-    const base="C"+(c.semana||"");
-    if(c.sobe_em) add(c.sobe_em,"org",base,c.status==="publicado",{t:"corte",id:c.id,field:"sobe_em"});
-    if(c.pago_em) add(c.pago_em,"pago",base+" 🚀",false,{t:"corte",id:c.id,field:"pago_em"});
+    if(c.sobe_em) push(String(c.sobe_em).slice(0,10),{kind:"org",cid:c.id,poster:c.poster,titulo:corteTit(c),done:c.status==="publicado"});
+    if(c.pago_ini && c.pago_fim){ const days=dateRange(c.pago_ini,c.pago_fim);
+      days.forEach((day,i)=>push(day,{kind:"pago",cid:c.id,titulo:corteTit(c),pos:days.length===1?"solo":(i===0?"start":(i===days.length-1?"end":"mid"))})); }
   });
-  (D.organicos||[]).forEach((o,i)=>{ add(o.data,"org",(o.tipo||"Post"),o.status==="publicado",{t:"org",i}); });
-  ((D.campanha||{}).agenda||[]).forEach((p,i)=>{ add(p.data,"pago",(p.label||"Anúncio"),p.status==="encerrada",{t:"pago",i}); });
-  return m;
+  (D.organicos||[]).forEach(o=>{ if(o.data) push(String(o.data).slice(0,10),{kind:"orgtext",label:o.tipo||"Post",done:o.status==="publicado"}); });
+  return seg;
 }
-function moveRef(ref,newDay){
-  if(!ref) return;
-  if(ref.t==="corte"){ const c=(D.cortes||[]).find(x=>x.id===ref.id); if(c) c[ref.field||"sobe_em"]=newDay; }
-  else if(ref.t==="org"){ if(D.organicos&&D.organicos[ref.i]) D.organicos[ref.i].data=newDay; }
-  else if(ref.t==="pago"){ if(D.campanha&&D.campanha.agenda&&D.campanha.agenda[ref.i]) D.campanha.agenda[ref.i].data=newDay; }
-}
-let dragRef=null;
+let dragData=null;
 function renderCal(){
   const pt=D.patrocinio||{}; const start=dpar(pt.inicio)||new Date(); const end=dpar(pt.fim)||start;
-  const evs=eventsByDay(); const notas=D.notas||{}; const today=new Date(); today.setHours(0,0,0,0);
+  const segs=calSegments(); const notas=D.notas||{}; const today=new Date(); today.setHours(0,0,0,0);
   let months=[]; let cur=new Date(start.getFullYear(),start.getMonth(),1); const last=new Date(end.getFullYear(),end.getMonth(),1);
   while(cur<=last){ months.push(new Date(cur)); cur.setMonth(cur.getMonth()+1); if(months.length>3)break; }
   let html="";
@@ -334,34 +356,62 @@ function renderCal(){
       const key=`${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
       const dt=new Date(y,m,d), isT=dt.getTime()===today.getTime();
       const inWin=dt>=new Date(start.getFullYear(),start.getMonth(),start.getDate())&&dt<=new Date(end.getFullYear(),end.getMonth(),end.getDate());
-      const chips=(evs[key]||[]).map((e,ci)=>{ const tip=e.label+(e.cls==="org"?" — publicação orgânica":e.cls==="pago"?" — impulsionamento pago":""); return `<span class="chip ${e.cls} ${e.done?'done':''} ${EDIT?'drag':''}" ${EDIT?`draggable="true" data-day="${key}" data-ci="${ci}"`:""} title="${esc(tip)}">${esc(e.label)}</span>`; }).join("");
+      const list=segs[key]||[]; let cont="";
+      list.filter(s=>s.kind==="pago").forEach(s=>{ const lbl=(s.pos==="start"||s.pos==="solo")?("🚀 "+esc(s.titulo)):""; cont+=`<span class="pgbar ${s.pos} ${EDIT?'drag':''}" ${EDIT?'draggable="true"':""} data-cid="${esc(s.cid)}" data-kind="pago" onclick="openPopup('pago','${esc(s.cid)}');event.stopPropagation()" title="Anúncio rodando — ${esc(s.titulo)}">${lbl}</span>`; });
+      list.filter(s=>s.kind==="org").forEach(s=>{ cont+=`<span class="orgthumb ${s.done?'done':''} ${EDIT?'drag':''}" ${EDIT?'draggable="true"':""} data-cid="${esc(s.cid)}" data-kind="org" onclick="openPopup('org','${esc(s.cid)}');event.stopPropagation()" style="background-image:url('${esc(s.poster||'')}')" title="${esc(s.titulo)} — publicação orgânica"><i>▶</i></span>`; });
+      list.filter(s=>s.kind==="orgtext").forEach(s=>{ cont+=`<span class="chip org ${s.done?'done':''}">${esc(s.label)}</span>`; });
       const nt=notas[key]?`<span class="note" ${EDIT?`onclick="editNota('${key}');event.stopPropagation()"`:""}>📝 ${esc(notas[key])}</span>`:"";
       const clk=(EDIT && inWin)?` onclick="cellClick(event,'${key}')" style="cursor:pointer"`:"";
       const plus=(EDIT && inWin && !notas[key])?`<span class="addnote">＋ nota</span>`:"";
-      html+=`<div class="day ${isT?'today':''} ${inWin?'':'out'}" data-day="${key}"${clk}><div class="n">${d}</div>${chips}${nt}${plus}</div>`;
+      html+=`<div class="day ${isT?'today':''} ${inWin?'':'out'}" data-day="${key}"${clk}><div class="n">${d}</div>${cont}${nt}${plus}</div>`;
     }
     const cells=first+dim, rest=(7-(cells%7))%7;
     for(let i=0;i<rest;i++) html+=`<div class="day out"></div>`;
     html+=`</div>`;
   });
   html+=`<div class="legend">
-    <span><i style="background:var(--org)"></i>Publicação orgânica</span>
-    <span><i style="background:var(--blue)"></i>Impulsionamento (pago)</span>
+    <span><i style="background:var(--org)"></i>Corte (publicação orgânica)</span>
+    <span><i style="background:var(--blue)"></i>Anúncio rodando (pago)</span>
     <span><i style="background:#c9d3df"></i>Já publicado</span>
-    ${EDIT?'<span style="color:var(--blue);font-weight:700">arraste os itens ou clique num dia para editar</span>':''}</div>`;
+    ${EDIT?'<span style="color:var(--blue);font-weight:700">arraste as miniaturas/faixas · clique num dia p/ nota</span>':'<span style="color:var(--muted)">toque num corte para ver os detalhes</span>'}</div>`;
   $("cal").innerHTML=html;
-  if(EDIT) wireDrag(evs);
+  if(EDIT) wireCalDrag();
 }
-function wireDrag(evs){
-  document.querySelectorAll('.chip.drag').forEach(ch=>{
-    ch.addEventListener('dragstart',e=>{ const day=ch.dataset.day, ci=+ch.dataset.ci; dragRef=(evs[day]||[])[ci]?.ref; e.dataTransfer.effectAllowed="move"; });
+function wireCalDrag(){
+  document.querySelectorAll('.orgthumb.drag,.pgbar.drag').forEach(el=>{
+    el.addEventListener('dragstart',e=>{ dragData={kind:el.dataset.kind,cid:el.dataset.cid}; e.dataTransfer.effectAllowed="move"; });
   });
   document.querySelectorAll('.day[data-day]').forEach(cell=>{
     cell.addEventListener('dragover',e=>{ e.preventDefault(); cell.classList.add('dragover'); });
     cell.addEventListener('dragleave',()=>cell.classList.remove('dragover'));
-    cell.addEventListener('drop',e=>{ e.preventDefault(); cell.classList.remove('dragover'); if(dragRef){ moveRef(dragRef,cell.dataset.day); dragRef=null; renderCal(); renderTL(); scheduleSave(); } });
+    cell.addEventListener('drop',e=>{ e.preventDefault(); cell.classList.remove('dragover'); if(!dragData)return; const day=cell.dataset.day; const c=(D.cortes||[]).find(x=>x.id===dragData.cid);
+      if(c){ if(dragData.kind==="org"){ c.sobe_em=day; } else if(dragData.kind==="pago"){ const days=dateRange(c.pago_ini,c.pago_fim); const dur=Math.max(1,days.length); const s=dpar(day); const en=new Date(s); en.setDate(en.getDate()+dur-1); c.pago_ini=day; c.pago_fim=isoOf(en); } }
+      dragData=null; renderCal(); renderCortes(); renderTL(); scheduleSave(); });
   });
 }
+function openPopup(kind,cid){
+  const c=(D.cortes||[]).find(x=>x.id===cid); if(!c)return;
+  const box=$("modal"), body=$("modalBody"); if(!box||!body)return;
+  const prof=igProfile(), handle=igHandle();
+  let h="";
+  if(kind==="org"){
+    const media=c.video?`<video class="mvid" playsinline controls poster="${esc(c.poster||'')}"><source src="${esc(c.video)}"></video>`:(c.poster?`<img class="mvid" src="${esc(c.poster)}">`:"");
+    const stL={agendado:"Agendado",no_ar:"No ar",publicado:"Publicado"}[c.status||"agendado"];
+    h=`<div class="mtag" style="background:var(--org)">Corte · publicação orgânica</div><h3>${esc(corteTit(c))}</h3>${media}
+       <p>🟢 <b>Sobe (orgânico):</b> ${c.sobe_em?fmtBR(c.sobe_em):"a definir"}<br>📌 <b>Status:</b> ${stL}${c.pago_ini?`<br>🔵 <b>Impulsionado:</b> ${fmtBR(c.pago_ini)} a ${fmtBR(c.pago_fim)}`:""}</p>
+       ${prof?`<a class="mbtn" href="${esc(prof)}" target="_blank" rel="noopener">📲 Ver no Instagram ${esc(handle)}</a>`:""}`;
+  } else {
+    const cp=D.campanha||{};
+    h=`<div class="mtag" style="background:var(--blue)">Anúncio pago (impulsionamento)</div><h3>${esc(corteTit(c))}</h3>
+       <p>🔵 <b>O anúncio roda:</b> ${c.pago_ini?(fmtBR(c.pago_ini)+" a "+fmtBR(c.pago_fim)):"a definir"}<br>
+          🎯 <b>Objetivo:</b> levar cliques e visitas ao seu Instagram<br>
+          👥 <b>Público:</b> ${esc(cp.publico||"lojistas de veículos")}<br>
+          📍 <b>Região:</b> ${esc(cp.regiao||"a definir")}</p>`;
+  }
+  if(EDIT) h+=`<button class="mbtn edit" onclick="closePopup();editCorte('${esc(cid)}')">✏️ editar datas</button>`;
+  body.innerHTML=h; box.style.display="flex";
+}
+function closePopup(){ const b=$("modal"); if(b) b.style.display="none"; const v=document.querySelector('#modalBody video'); if(v){try{v.pause();}catch(e){}} }
 function addNota(){ const day=prompt("Data da nota (AAAA-MM-DD):"); if(!day)return; editNota(day); }
 function editNota(day){ const cur=(D.notas||{})[day]||""; const v=prompt("Nota / tag para "+day+":",cur); if(v===null)return; D.notas=D.notas||{}; if(v.trim()==="") delete D.notas[day]; else D.notas[day]=v.trim(); renderCal(); scheduleSave(); }
 function cellClick(ev,day){ if(ev.target && (ev.target.classList.contains('chip')||ev.target.classList.contains('note'))) return; editNota(day); }
@@ -384,7 +434,7 @@ function renderCortes(){
                        :(c.poster?`<img src="${esc(c.poster)}" alt="" style="width:100%;height:100%;object-fit:cover">`:"");
     const play=c.video?`<button class="playbtn" onclick="playCorte(this)" aria-label="Tocar o corte">▶</button>`:"";
     const org=c.sobe_em?("🟢 Orgânico: "+fmtBR(c.sobe_em)):"🟢 Orgânico: a definir";
-    const pago=c.pago_em?(" · 🔵 Pago: "+fmtBR(c.pago_em)):"";
+    const pago=c.pago_ini?(" · 🔵 Anúncio: "+fmtBR(c.pago_ini)+"–"+fmtBR(c.pago_fim)):"";
     const edit=EDIT?`<button class="cedit" onclick="editCorte('${esc(c.id)}')">✏️ editar datas</button>`:"";
     return `<div class="corte"><div class="thumb">${media}${play}<span class="wk">Semana ${esc(c.semana||"?")}</span>${c.turbinado?'<span class="turbo">🚀 turbinado</span>':''}</div>
       <div class="meta"><b>${esc(c.titulo||("Corte "+(c.semana||"")))}</b><span class="pill ${st}">${stL}</span>
@@ -394,13 +444,18 @@ function renderCortes(){
 function playCorte(btn){ const box=btn.closest('.corte'); const v=box&&box.querySelector('video'); if(!v)return; v.setAttribute('controls','controls'); v.muted=false; box.classList.add('playing'); const p=v.play&&v.play(); if(p&&p.catch)p.catch(()=>{ v.muted=true; v.play(); }); }
 function editCorte(id){
   const c=(D.cortes||[]).find(x=>x.id===id); if(!c)return;
-  const org=prompt("Data da publicação ORGÂNICA do "+(c.titulo||("corte "+(c.semana||"")))+" (AAAA-MM-DD):", c.sobe_em||"");
+  const nome=c.titulo||("corte "+(c.semana||""));
+  const org=prompt("Publicação ORGÂNICA do "+nome+" — data (AAAA-MM-DD):", c.sobe_em||"");
   if(org===null) return;
-  const pago=prompt("Data do IMPULSIONAMENTO / PAGO (AAAA-MM-DD — deixe vazio se não houver):", c.pago_em||"");
-  if(pago===null) return;
+  const pi=prompt("ANÚNCIO (impulsionamento) — INÍCIO (AAAA-MM-DD, vazio se não houver):", c.pago_ini||"");
+  if(pi===null) return;
+  let pf=c.pago_fim||pi;
+  if(pi.trim()){ pf=prompt("ANÚNCIO — FIM (último dia que roda, AAAA-MM-DD):", c.pago_fim||pi.trim()); if(pf===null) return; }
   const stt=prompt("Status (agendado / no_ar / publicado):", c.status||"agendado");
   if(stt===null) return;
-  c.sobe_em=org.trim(); c.pago_em=(pago.trim()||undefined); if(stt.trim()) c.status=stt.trim();
+  c.sobe_em=org.trim();
+  if(pi.trim()){ c.pago_ini=pi.trim(); c.pago_fim=(pf.trim()||pi.trim()); } else { delete c.pago_ini; delete c.pago_fim; }
+  if(stt.trim()) c.status=stt.trim();
   renderCortes(); renderCal(); renderTL(); scheduleSave();
 }
 
@@ -458,7 +513,7 @@ function renderTL(){
   (D.cortes||[]).forEach(c=>{
     const nome=c.titulo||("Corte "+(c.semana||""));
     if(c.sobe_em) items.push({data:c.sobe_em,cls:"org",b:"Orgânico",t:nome,done:(c.status==="publicado")});
-    if(c.pago_em) items.push({data:c.pago_em,cls:"pago",b:"Pago",t:"Impulsionar "+nome,done:false});
+    if(c.pago_ini) items.push({data:c.pago_ini,cls:"pago",b:"Pago",t:"Impulsionar "+nome+" (até "+fmtBR(c.pago_fim)+")",done:false});
   });
   (D.organicos||[]).forEach(o=>{ items.push({data:o.data,cls:"org",b:(o.tipo||"Orgânico"),t:(o.descricao||"Post orgânico"),done:(o.status==="publicado")}); });
   ((D.campanha||{}).agenda||[]).forEach(p=>{ items.push({data:p.data,cls:"pago",b:"Pago",t:(p.label||"Anúncio"),done:(p.status==="encerrada")}); });
