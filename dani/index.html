@@ -359,8 +359,9 @@ function renderCal(){
       const inWin=dt>=winS&&dt<=winE;
       const list=segs[key]||[]; let cont="";
       list.filter(s=>s.kind==="pago").forEach(s=>{
-        if(s.pos==="start"||s.pos==="solo"){ cont+=`<span class="orgthumb pago" onclick="openPopup('pago','${esc(s.cid)}');event.stopPropagation()" style="background-image:url('${esc(s.poster||'')}')" title="Anúncio pago — ${esc(s.titulo)}"><i>🚀</i></span>`; }
-        else { cont+=`<span class="pgbar ${s.pos}" onclick="openPopup('pago','${esc(s.cid)}');event.stopPropagation()" title="Anúncio pago — ${esc(s.titulo)}">🔵 anúncio</span>`; }
+        if(s.pos==="start"||s.pos==="solo"){ cont+=`<span class="orgthumb pago" onclick="openPopup('pago','${esc(s.cid)}');event.stopPropagation()" style="background-image:url('${esc(s.poster||'')}')" title="Anúncio pago começa — ${esc(s.titulo)}"><i>🚀</i></span>`; }
+        else if(s.pos==="end"){ cont+=`<span class="pgbar end" onclick="openPopup('pago','${esc(s.cid)}');event.stopPropagation()" title="Anúncio pago termina — ${esc(s.titulo)}">🏁 fim anúncio</span>`; }
+        /* dias do meio: sem etiqueta, pra nao poluir */
       });
       list.filter(s=>s.kind==="org").forEach(s=>{ cont+=`<span class="orgthumb org" onclick="openPopup('org','${esc(s.cid)}');event.stopPropagation()" style="background-image:url('${esc(s.poster||'')}')" title="${esc(s.titulo)} — publicação orgânica"><i>▶</i></span>`; });
       list.filter(s=>s.kind==="orgtext").forEach(s=>{ cont+=`<span class="chip org ${s.done?'done':''}">${esc(s.label)}</span>`; });
@@ -400,9 +401,12 @@ function openPopup(kind,cid){
   if(kind==="org"){
     const media=c.video?`<video class="mvid" playsinline controls poster="${esc(c.poster||'')}"><source src="${esc(c.video)}"></video>`:(c.poster?`<img class="mvid" src="${esc(c.poster)}">`:"");
     const stL={agendado:"Agendado",no_ar:"No ar",publicado:"Publicado"}[c.status||"agendado"];
+    const dest=c.link||prof, lbl=c.link?"📲 Ver este corte no Instagram":("📲 Ver no Instagram "+handle);
     h=`<div class="mtag" style="background:var(--org)">Corte · publicação orgânica</div><h3>${esc(corteTit(c))}</h3>${media}
        <p>🟢 <b>Sobe (orgânico):</b> ${c.sobe_em?fmtBR(c.sobe_em):"a definir"}<br>📌 <b>Status:</b> ${stL}${c.pago_ini?`<br>🔵 <b>Impulsionado:</b> ${fmtBR(c.pago_ini)} a ${fmtBR(c.pago_fim)}`:""}</p>
-       ${prof?`<a class="mbtn" href="${esc(prof)}" target="_blank" rel="noopener">📲 Ver no Instagram ${esc(handle)}</a>`:""}`;
+       ${dest?`<a class="mbtn" href="${esc(dest)}" target="_blank" rel="noopener">${lbl}</a>`:""}`;
+    if(EDIT){ h+=`<label class="mbtn edit" style="cursor:pointer">🎬 Trocar vídeo do corte<input type="file" accept="video/*,.mov,.mp4" style="display:none" onchange="trocarMidia(this,'${esc(cid)}','video')"></label>
+      <label class="mbtn edit" style="cursor:pointer">📷 Trocar capa<input type="file" accept="image/*" style="display:none" onchange="trocarMidia(this,'${esc(cid)}','poster')"></label>`; }
   } else {
     const cp=D.campanha||{};
     h=`<div class="mtag" style="background:var(--blue)">Anúncio pago (impulsionamento)</div><h3>${esc(corteTit(c))}</h3>
@@ -438,7 +442,7 @@ function renderCortes(){
     const play=c.video?`<button class="playbtn" onclick="playCorte(this)" aria-label="Tocar o corte">▶</button>`:"";
     const org=c.sobe_em?("🟢 Orgânico: "+fmtBR(c.sobe_em)):"🟢 Orgânico: a definir";
     const pago=c.pago_ini?(" · 🔵 Anúncio: "+fmtBR(c.pago_ini)+"–"+fmtBR(c.pago_fim)):"";
-    const edit=EDIT?`<button class="cedit" onclick="editCorte('${esc(c.id)}')">✏️ editar datas</button>`:"";
+    const edit=EDIT?`<button class="cedit" onclick="editCorte('${esc(c.id)}')">✏️ editar (orgânico · anúncio · link)</button><button class="cedit" onclick="openPopup('org','${esc(c.id)}')">🎬 trocar vídeo/capa</button>`:"";
     return `<div class="corte"><div class="thumb">${media}${play}<span class="wk">Semana ${esc(c.semana||"?")}</span>${c.turbinado?'<span class="turbo">🚀 turbinado</span>':''}</div>
       <div class="meta"><b>${esc(c.titulo||("Corte "+(c.semana||"")))}</b><span class="pill ${st}">${stL}</span>
       <div class="when">${org}${pago}</div>${edit}</div></div>`;
@@ -456,10 +460,43 @@ function editCorte(id){
   if(pi.trim()){ pf=prompt("ANÚNCIO — FIM (último dia que roda, AAAA-MM-DD):", c.pago_fim||pi.trim()); if(pf===null) return; }
   const stt=prompt("Status (agendado / no_ar / publicado):", c.status||"agendado");
   if(stt===null) return;
+  const link=prompt("Link do Reel no Instagram deste corte (opcional):", c.link||"");
+  if(link===null) return;
   c.sobe_em=org.trim();
   if(pi.trim()){ c.pago_ini=pi.trim(); c.pago_fim=(pf.trim()||pi.trim()); } else { delete c.pago_ini; delete c.pago_fim; }
   if(stt.trim()) c.status=stt.trim();
+  c.link=link.trim();
   renderCortes(); renderCal(); renderTL(); scheduleSave();
+}
+/* ---- upload / troca de midia do corte ---- */
+async function uploadFile(file,kind){
+  const fd=new FormData();
+  fd.append('action','upload'); fd.append('slug',(D.convidado||{}).slug||''); fd.append('token',TOKEN); fd.append('kind',kind);
+  fd.append('file',file,file.name||(kind==='poster'?'capa.jpg':'video.mp4'));
+  const r=await fetch(API_BASE,{method:'POST',body:fd}); const j=await r.json();
+  if(j&&j.erro) throw new Error(j.erro);
+  return j&&j.url;
+}
+function capturePosterFromFile(file){ return new Promise((res,rej)=>{
+  const v=document.createElement('video'); v.preload='metadata'; v.muted=true; v.playsInline=true; v.src=URL.createObjectURL(file);
+  v.onloadeddata=()=>{ try{ v.currentTime=Math.min(0.6,(v.duration||1)/2); }catch(e){ rej(e); } };
+  v.onseeked=()=>{ try{ const cv=document.createElement('canvas'); cv.width=v.videoWidth||720; cv.height=v.videoHeight||1280; cv.getContext('2d').drawImage(v,0,0,cv.width,cv.height); cv.toBlob(b=>{ URL.revokeObjectURL(v.src); res(b); },'image/jpeg',0.82); }catch(e){ rej(e); } };
+  v.onerror=()=>rej(new Error('nao li o video')); }); }
+async function trocarMidia(inp,cid,kind){
+  const f=inp.files&&inp.files[0]; if(!f) return;
+  if(!TOKEN){ alert('Abra o painel com o link de edição (com token) para enviar arquivos.'); return; }
+  const c=(D.cortes||[]).find(x=>x.id===cid); if(!c) return;
+  const lab=inp.parentElement, txt=lab.childNodes[0]; const old=txt?txt.nodeValue:'';
+  if(txt) txt.nodeValue='enviando…';
+  try{
+    const url=await uploadFile(f, kind==='video'?'video':'poster');
+    if(!url){ alert('Falha no upload.'); return; }
+    if(kind==='video'){ c.video=url; try{ const blob=await capturePosterFromFile(f); if(blob){ const purl=await uploadFile(blob,'poster'); if(purl) c.poster=purl; } }catch(e){} }
+    else { c.poster=url; }
+    scheduleSave(); renderCortes(); renderCal(); openPopup('org',cid);
+    alert(kind==='video'?'Vídeo trocado com sucesso!':'Capa trocada com sucesso!');
+  }catch(e){ alert('Erro: '+(e.message||e)); }
+  finally{ if(txt) txt.nodeValue=old; }
 }
 
 function renderCamp(){
